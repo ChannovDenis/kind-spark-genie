@@ -37,7 +37,4 @@ export function SuperBuilder() {
   return <PlaceholderPage title="Конструктор" description="Визуальный конструктор мини-аппов" emoji="🛠️" />;
 }
 
-// Studio pages
-export function StudioGenerator() {
-  return <PlaceholderPage title="Генератор видео" description="Создание AI-видео по шаблонам" emoji="🎬" />;
-}
+// Studio pages - StudioGenerator moved to src/pages/studio/Generator.tsx

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Video, 
   Play, 
@@ -101,11 +101,8 @@ const statusConfig = {
 };
 
 export default function StudioDashboard() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleCreateVideo = () => {
-    toast.success('Открыт конструктор видео');
-  };
 
   const handleRetry = (id: number) => {
     toast.success(`Перезапуск генерации видео #${id}`);
@@ -121,7 +118,7 @@ export default function StudioDashboard() {
         title="Контент-студия"
         description="Генерация и управление AI-видео для клиентов"
         actions={
-          <Button onClick={handleCreateVideo}>
+          <Button onClick={() => navigate('/studio/generator')}>
             <Plus className="h-4 w-4 mr-2" />
             Создать видео
           </Button>
