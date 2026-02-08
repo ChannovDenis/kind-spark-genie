@@ -222,3 +222,120 @@ export const mockReports: Report[] = [
     size: '3.8 МБ',
   },
 ];
+
+// ============================================
+// EXPERT MODULE DATA
+// ============================================
+
+export type SessionStatus = 'completed' | 'scheduled' | 'cancelled' | 'in_progress';
+
+export interface ExpertSession {
+  id: string;
+  clientName: string;
+  topic: string;
+  date: string;
+  duration: number; // minutes
+  rating: number | null;
+  status: SessionStatus;
+  service: string;
+  conclusionId: string | null;
+}
+
+export const expertSessions: ExpertSession[] = [
+  { id: 'ses-1', clientName: 'Иван Петров', topic: 'Расторжение трудового договора', date: '2026-02-08T14:00:00', duration: 18, rating: 4.8, status: 'completed', service: 'lawyer', conclusionId: 'con-1' },
+  { id: 'ses-2', clientName: 'Мария Козлова', topic: 'Консультация по аренде', date: '2026-02-07T15:30:00', duration: 25, rating: 5.0, status: 'completed', service: 'lawyer', conclusionId: 'con-2' },
+  { id: 'ses-3', clientName: 'Алексей Новиков', topic: 'Оптимизация налогов', date: '2026-02-06T10:00:00', duration: 12, rating: 4.5, status: 'completed', service: 'financier', conclusionId: 'con-3' },
+  { id: 'ses-4', clientName: 'Елена Сидорова', topic: 'Консультация по давлению', date: '2026-02-05T11:30:00', duration: 22, rating: 4.9, status: 'completed', service: 'doctor', conclusionId: 'con-4' },
+  { id: 'ses-5', clientName: 'Дмитрий Орлов', topic: 'Тревожные состояния', date: '2026-02-04T16:00:00', duration: 35, rating: 5.0, status: 'completed', service: 'psychologist', conclusionId: 'con-5' },
+  { id: 'ses-6', clientName: 'Анна Белова', topic: 'Защита прав потребителя', date: '2026-02-08T17:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
+  { id: 'ses-7', clientName: 'Сергей Васильев', topic: 'Наследственные вопросы', date: '2026-02-09T10:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
+  { id: 'ses-8', clientName: 'Ольга Миронова', topic: 'Стресс на работе', date: '2026-02-03T14:00:00', duration: 0, rating: null, status: 'cancelled', service: 'psychologist', conclusionId: null },
+];
+
+export type ConclusionType = 'consultation' | 'referral' | 'general';
+export type ConclusionStatus = 'draft' | 'completed' | 'sent';
+
+export interface ExpertConclusion {
+  id: string;
+  clientName: string;
+  sessionId: string;
+  type: ConclusionType;
+  date: string;
+  status: ConclusionStatus;
+  text: string;
+}
+
+export const expertConclusions: ExpertConclusion[] = [
+  { id: 'con-1', clientName: 'Иван Петров', sessionId: 'ses-1', type: 'consultation', date: '2026-02-08T14:30:00', status: 'completed', text: 'Проведена консультация по расторжению трудового договора. Рекомендовано обратиться в трудовую инспекцию.' },
+  { id: 'con-2', clientName: 'Мария Козлова', sessionId: 'ses-2', type: 'consultation', date: '2026-02-07T16:00:00', status: 'sent', text: 'Разъяснены права арендатора при расторжении договора аренды.' },
+  { id: 'con-3', clientName: 'Алексей Новиков', sessionId: 'ses-3', type: 'general', date: '2026-02-06T10:30:00', status: 'draft', text: 'Черновик заключения по оптимизации налогообложения для ИП.' },
+  { id: 'con-4', clientName: 'Елена Сидорова', sessionId: 'ses-4', type: 'referral', date: '2026-02-05T12:00:00', status: 'completed', text: 'Направление к кардиологу для дополнительного обследования.' },
+  { id: 'con-5', clientName: 'Дмитрий Орлов', sessionId: 'ses-5', type: 'consultation', date: '2026-02-04T17:00:00', status: 'completed', text: 'Проведена консультация по управлению тревожностью. Рекомендован курс из 5 сессий.' },
+];
+
+// ============================================
+// SUPER ADMIN MODULE DATA
+// ============================================
+
+export interface PricingPlan {
+  id: string;
+  name: string;
+  price: number;
+  period: 'month' | 'year';
+  limits: {
+    aiRequests: number | null; // null = unlimited
+    escalations: number | null;
+    storage: number; // GB
+    apiCalls: number | null;
+  };
+  support: string;
+  features: string[];
+  isPopular?: boolean;
+}
+
+export const pricingPlans: PricingPlan[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 15000,
+    period: 'month',
+    limits: { aiRequests: 1000, escalations: 50, storage: 5, apiCalls: 10000 },
+    support: 'Email-поддержка',
+    features: ['3 сервиса', 'Базовая аналитика', 'Email уведомления'],
+  },
+  {
+    id: 'business',
+    name: 'Business',
+    price: 45000,
+    period: 'month',
+    limits: { aiRequests: 5000, escalations: 200, storage: 25, apiCalls: 50000 },
+    support: 'Приоритетная поддержка',
+    features: ['Все сервисы', 'Продвинутая аналитика', 'API доступ', 'Брендирование'],
+    isPopular: true,
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 120000,
+    period: 'month',
+    limits: { aiRequests: null, escalations: null, storage: 100, apiCalls: null },
+    support: '24/7 + персональный менеджер',
+    features: ['Безлимитные запросы', 'SLA 99.9%', 'Выделенная инфраструктура', 'Кастомные интеграции'],
+  },
+];
+
+export interface MiniApp {
+  id: string;
+  serviceId: string;
+  name: string;
+  icon: string;
+  usersCount: number;
+  status: 'active' | 'draft' | 'disabled';
+  createdAt: string;
+}
+
+export const miniApps: MiniApp[] = [
+  { id: 'app-1', serviceId: 'lawyer', name: 'Юрист AI', icon: '⚖️', usersCount: 12500, status: 'active', createdAt: '2025-06-15' },
+  { id: 'app-2', serviceId: 'doctor', name: 'Врач AI', icon: '🩺', usersCount: 8400, status: 'active', createdAt: '2025-07-20' },
+  { id: 'app-3', serviceId: 'psychologist', name: 'Психолог AI', icon: '🧠', usersCount: 3200, status: 'active', createdAt: '2025-09-01' },
+];
