@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Building2 } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useTenant, Tenant } from '@/contexts/TenantContext';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export function TenantSelector() {
   const { currentTenant, setCurrentTenant, tenants } = useTenant();
@@ -28,7 +29,12 @@ export function TenantSelector() {
         {tenants.map((tenant) => (
           <DropdownMenuItem
             key={tenant.id}
-            onClick={() => setCurrentTenant(tenant)}
+            onClick={() => {
+              if (tenant.id !== currentTenant.id) {
+                setCurrentTenant(tenant);
+                toast.success(`Переключено на ${tenant.name}`);
+              }
+            }}
             className={cn(
               "flex items-center gap-3 cursor-pointer",
               tenant.id === currentTenant.id && "bg-accent"

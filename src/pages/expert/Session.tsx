@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Phone, 
   PhoneOff, 
@@ -16,11 +16,11 @@ import {
   User,
   Calendar,
   Briefcase,
-  Heart,
   ChevronLeft,
   MoreVertical,
   Volume2,
-  Settings
+  Settings,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,8 +28,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatusBadge } from '@/components/shared/StatusBadge';
+import { ConclusionModal } from '@/components/expert/ConclusionModal';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Mock client data
 const clientData = {
@@ -85,13 +86,34 @@ const chatHistory = [
 ];
 
 export default function ExpertSession() {
+  const navigate = useNavigate();
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isCallActive, setIsCallActive] = useState(true);
   const [aiPrompt, setAiPrompt] = useState('');
   const [selectedSuggestion, setSelectedSuggestion] = useState<number | null>(null);
+  const [isConclusionOpen, setIsConclusionOpen] = useState(false);
+  const [seconds, setSeconds] = useState(0);
 
-  const sessionDuration = '12:34';
+  // Real-time session timer
+  useEffect(() => {
+    if (!isCallActive) return;
+    const interval = setInterval(() => setSeconds(s => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [isCallActive]);
+
+  const formatTime = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleSessionComplete = () => {
+    setIsCallActive(false);
+    navigate('/expert');
+  };
+
+  const sessionDuration = formatTime(seconds);
 
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col -m-6">
@@ -117,6 +139,10 @@ export default function ExpertSession() {
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="font-mono">{sessionDuration}</span>
           </div>
+          <Button variant="outline" size="sm" onClick={() => setIsConclusionOpen(true)}>
+            <ClipboardList className="h-4 w-4 mr-2" />
+            Записать заключение
+          </Button>
           <Button variant="ghost" size="icon">
             <Settings className="h-4 w-4" />
           </Button>
@@ -446,6 +472,14 @@ export default function ExpertSession() {
           </div>
         </div>
       </div>
+
+      <ConclusionModal
+        isOpen={isConclusionOpen}
+        onClose={() => setIsConclusionOpen(false)}
+        clientName={clientData.name}
+        topic={clientData.topic}
+        onComplete={handleSessionComplete}
+      />
     </div>
   );
 }
