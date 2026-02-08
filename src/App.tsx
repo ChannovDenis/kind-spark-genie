@@ -14,6 +14,7 @@ import AdminReports from "@/pages/admin/Reports";
 
 // Expert pages
 import ExpertDashboard from "@/pages/expert/Dashboard";
+import ExpertSession from "@/pages/expert/Session";
 import { ExpertSchedule, ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
 
 // Quality pages
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/expert" element={<MainLayout><ExpertDashboard /></MainLayout>} />
           <Route path="/expert/schedule" element={<MainLayout><ExpertSchedule /></MainLayout>} />
           <Route path="/expert/sessions" element={<MainLayout><ExpertSessions /></MainLayout>} />
+          <Route path="/expert/session/:id" element={<MainLayout><ExpertSession /></MainLayout>} />
           <Route path="/expert/conclusions" element={<MainLayout><ExpertConclusions /></MainLayout>} />
           
           {/* Quality routes */}
