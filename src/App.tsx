@@ -22,6 +22,10 @@ import QualityDashboard from "@/pages/quality/Dashboard";
 import DialogReview from "@/pages/quality/DialogReview";
 import { QualityDialogs, QualityKnowledge, QualityTraining } from "@/pages/PlaceholderPages";
 
+// Studio pages
+import StudioDashboard from "@/pages/studio/Dashboard";
+import { StudioGenerator } from "@/pages/PlaceholderPages";
+
 // Super admin pages
 import SuperDashboard from "@/pages/super/Dashboard";
 import { SuperPricing, SuperSettings, SuperBuilder } from "@/pages/PlaceholderPages";
@@ -60,6 +64,10 @@ const App = () => (
           <Route path="/quality/dialogs/:id" element={<MainLayout><DialogReview /></MainLayout>} />
           <Route path="/quality/knowledge" element={<MainLayout><QualityKnowledge /></MainLayout>} />
           <Route path="/quality/training" element={<MainLayout><QualityTraining /></MainLayout>} />
+          
+          {/* Studio routes */}
+          <Route path="/studio" element={<MainLayout><StudioDashboard /></MainLayout>} />
+          <Route path="/studio/generator" element={<MainLayout><StudioGenerator /></MainLayout>} />
           
           {/* Super admin routes */}
           <Route path="/super" element={<MainLayout><SuperDashboard /></MainLayout>} />
