@@ -1,6 +1,26 @@
 // Types
 export type ErrorCategory = 'hallucination' | 'inaccuracy' | 'empathy' | 'protocol';
 
+export interface ContextMessage {
+  role: 'user' | 'ai';
+  content: string;
+  timestamp: string;
+}
+
+export interface CaseRating {
+  accuracy: number;      // 1-5
+  completeness: number;  // 1-5
+  tone: number;          // 1-5
+}
+
+export interface Reviewer {
+  userId: string;
+  name: string;
+  decision: 'approve' | 'reject';
+  comment?: string;
+  ratedAt: string;
+}
+
 export interface TrainingCase {
   id: string;
   dialogId: string;
@@ -18,6 +38,12 @@ export interface TrainingCase {
   reviewedAt?: string;
   priority: 'critical' | 'high' | 'medium' | 'low';
   tags: string[];
+  // NEW: Enhanced fields for better annotation
+  confidenceScore: number;           // AI confidence (0-1)
+  contextMessages: ContextMessage[]; // Dialog history
+  ratings?: CaseRating;
+  reviewers?: Reviewer[];
+  similarCaseIds?: string[];
 }
 
 export interface TrainingBatch {
@@ -84,6 +110,15 @@ export const trainingCases: TrainingCase[] = [
     reviewedAt: '2026-02-08T09:15:00',
     priority: 'critical',
     tags: ['возврат', 'техника', 'ЗоЗПП'],
+    confidenceScore: 0.92,
+    contextMessages: [
+      { role: 'user', content: 'Здравствуйте', timestamp: '2026-02-07T14:25:00' },
+      { role: 'ai', content: 'Добрый день! Чем могу помочь?', timestamp: '2026-02-07T14:25:05' },
+      { role: 'user', content: 'Купил телефон неделю назад', timestamp: '2026-02-07T14:26:00' },
+      { role: 'ai', content: 'Понял. Какой у вас вопрос по покупке?', timestamp: '2026-02-07T14:26:05' },
+    ],
+    ratings: { accuracy: 5, completeness: 4, tone: 5 },
+    similarCaseIds: ['tc-5'],
   },
   {
     id: 'tc-2',
@@ -102,6 +137,13 @@ export const trainingCases: TrainingCase[] = [
     reviewedAt: '2026-02-07T16:45:00',
     priority: 'critical',
     tags: ['медицина', 'назначения', 'протокол'],
+    confidenceScore: 0.88,
+    contextMessages: [
+      { role: 'user', content: 'Нужна консультация врача', timestamp: '2026-02-07T10:18:00' },
+      { role: 'ai', content: 'Конечно, опишите ваши симптомы', timestamp: '2026-02-07T10:18:10' },
+    ],
+    ratings: { accuracy: 5, completeness: 5, tone: 4 },
+    similarCaseIds: ['tc-6'],
   },
   {
     id: 'tc-3',
@@ -118,6 +160,14 @@ export const trainingCases: TrainingCase[] = [
     createdBy: 'Елена Смирнова',
     priority: 'critical',
     tags: ['кризис', 'эскалация', 'эмпатия'],
+    confidenceScore: 0.76,
+    contextMessages: [
+      { role: 'user', content: 'Хочу поговорить', timestamp: '2026-02-08T07:55:00' },
+      { role: 'ai', content: 'Я здесь, чтобы выслушать вас. Что случилось?', timestamp: '2026-02-08T07:55:10' },
+      { role: 'user', content: 'Всё навалилось... работа, семья, ничего не получается', timestamp: '2026-02-08T07:57:00' },
+      { role: 'ai', content: 'Звучит тяжело. Расскажите подробнее, что вас беспокоит больше всего?', timestamp: '2026-02-08T07:57:15' },
+    ],
+    similarCaseIds: [],
   },
   {
     id: 'tc-4',
@@ -136,6 +186,13 @@ export const trainingCases: TrainingCase[] = [
     reviewedAt: '2026-02-06T15:00:00',
     priority: 'high',
     tags: ['налоги', 'вычет', 'обучение'],
+    confidenceScore: 0.95,
+    contextMessages: [
+      { role: 'user', content: 'Вопрос по налогам', timestamp: '2026-02-06T11:28:00' },
+      { role: 'ai', content: 'Слушаю вас. Какой у вас вопрос?', timestamp: '2026-02-06T11:28:10' },
+    ],
+    ratings: { accuracy: 5, completeness: 5, tone: 5 },
+    similarCaseIds: [],
   },
   {
     id: 'tc-5',
@@ -154,6 +211,15 @@ export const trainingCases: TrainingCase[] = [
     reviewedAt: '2026-02-02T10:30:00',
     priority: 'high',
     tags: ['трудовое право', 'зарплата', 'задержка'],
+    confidenceScore: 0.84,
+    contextMessages: [
+      { role: 'user', content: 'Проблема с работодателем', timestamp: '2026-02-01T08:55:00' },
+      { role: 'ai', content: 'Расскажите подробнее, что произошло?', timestamp: '2026-02-01T08:55:10' },
+      { role: 'user', content: 'Задерживают зарплату уже давно', timestamp: '2026-02-01T08:57:00' },
+      { role: 'ai', content: 'Понятно. На сколько задерживают и получали ли вы что-то за это время?', timestamp: '2026-02-01T08:57:15' },
+    ],
+    ratings: { accuracy: 5, completeness: 5, tone: 4 },
+    similarCaseIds: ['tc-1'],
   },
   {
     id: 'tc-6',
@@ -170,6 +236,12 @@ export const trainingCases: TrainingCase[] = [
     createdBy: 'Алексей Петров',
     priority: 'critical',
     tags: ['педиатрия', 'температура', 'дети'],
+    confidenceScore: 0.79,
+    contextMessages: [
+      { role: 'user', content: 'Срочно нужен совет врача', timestamp: '2026-02-08T07:28:00' },
+      { role: 'ai', content: 'Слушаю вас, что случилось?', timestamp: '2026-02-08T07:28:10' },
+    ],
+    similarCaseIds: ['tc-2'],
   },
 ];
 
@@ -248,4 +320,10 @@ export function getCasesByCategory(category: ErrorCategory): TrainingCase[] {
 
 export function getCasesByService(service: string): TrainingCase[] {
   return trainingCases.filter(c => c.service === service);
+}
+
+export function getSimilarCases(caseId: string): TrainingCase[] {
+  const targetCase = trainingCases.find(c => c.id === caseId);
+  if (!targetCase?.similarCaseIds) return [];
+  return trainingCases.filter(c => targetCase.similarCaseIds?.includes(c.id));
 }

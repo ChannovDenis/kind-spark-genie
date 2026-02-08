@@ -2,6 +2,8 @@ import { Check, X, Clock, Sparkles, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { 
   TrainingCase, 
@@ -11,6 +13,8 @@ import {
 } from '@/data/trainingData';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { DialogContextBadge } from './DialogContext';
+import { CompactRating } from './QualityRatingScale';
 
 interface TrainingCaseCardProps {
   trainingCase: TrainingCase;
@@ -18,6 +22,9 @@ interface TrainingCaseCardProps {
   onApprove?: (trainingCase: TrainingCase) => void;
   onReject?: (trainingCase: TrainingCase) => void;
   isSelected?: boolean;
+  isChecked?: boolean;
+  onCheckChange?: (checked: boolean) => void;
+  showCheckbox?: boolean;
 }
 
 const statusConfig = {
@@ -39,17 +46,23 @@ export function TrainingCaseCard({
   onSelect, 
   onApprove, 
   onReject,
-  isSelected 
+  isSelected,
+  isChecked = false,
+  onCheckChange,
+  showCheckbox = false
 }: TrainingCaseCardProps) {
   const status = statusConfig[trainingCase.status];
   const priority = priorityConfig[trainingCase.priority];
   const StatusIcon = status.icon;
+  const confidencePercent = Math.round(trainingCase.confidenceScore * 100);
+  const isHighConfidence = trainingCase.confidenceScore > 0.85;
 
   return (
     <Card 
       className={cn(
         "cursor-pointer transition-all hover:shadow-md",
-        isSelected && "ring-2 ring-primary"
+        isSelected && "ring-2 ring-primary",
+        isChecked && "bg-primary/5"
       )}
       onClick={() => onSelect(trainingCase)}
     >
@@ -57,6 +70,16 @@ export function TrainingCaseCard({
         {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex items-center gap-2 flex-wrap">
+            {showCheckbox && (
+              <Checkbox
+                checked={isChecked}
+                onCheckedChange={(checked) => {
+                  onCheckChange?.(checked as boolean);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="mr-1"
+              />
+            )}
             <Badge className={cn("text-xs", status.className)}>
               <StatusIcon className="h-3 w-3 mr-1" />
               {status.label}
@@ -83,6 +106,23 @@ export function TrainingCaseCard({
           <p className="text-sm text-destructive line-clamp-2">{trainingCase.errorDescription}</p>
         </div>
 
+        {/* Confidence indicator */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Уверенность AI:</span>
+          <Progress 
+            value={confidencePercent} 
+            className={cn("w-16 h-1.5", isHighConfidence && "[&>div]:bg-warning")} 
+          />
+          <span className={cn("text-xs", isHighConfidence && "text-warning font-medium")}>
+            {confidencePercent}%
+          </span>
+          {isHighConfidence && (
+            <Badge variant="outline" className="text-xs text-warning border-warning/30">
+              Приоритет
+            </Badge>
+          )}
+        </div>
+
         {/* Footer */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -90,6 +130,8 @@ export function TrainingCaseCard({
               {serviceLabels[trainingCase.service]}
             </Badge>
             <span>{format(new Date(trainingCase.createdAt), 'd MMM', { locale: ru })}</span>
+            <DialogContextBadge messageCount={trainingCase.contextMessages.length} />
+            <CompactRating ratings={trainingCase.ratings} />
           </div>
           
           {trainingCase.status === 'pending' && onApprove && onReject && (
