@@ -1,4 +1,5 @@
 import { Headphones, Calendar, Video, Star, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -96,10 +97,12 @@ export default function ExpertDashboard() {
                 <div className="text-sm text-muted-foreground">{session.topic}</div>
               </div>
 
-              <Button size="sm" className="gap-2">
-                <Video className="h-4 w-4" />
-                Начать
-              </Button>
+              <Link to={`/expert/session/${session.id}`}>
+                <Button size="sm" className="gap-2">
+                  <Video className="h-4 w-4" />
+                  Начать
+                </Button>
+              </Link>
             </div>
           ))}
         </div>
