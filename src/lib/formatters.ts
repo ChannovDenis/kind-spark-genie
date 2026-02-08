@@ -1,3 +1,22 @@
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+
+/**
+ * Форматирование даты для графиков (8 фев)
+ */
+export function formatChartDate(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return format(d, 'd MMM', { locale: ru });
+}
+
+/**
+ * Форматирование даты для графиков с годом (Янв 2026)
+ */
+export function formatChartMonth(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return format(d, 'LLL yyyy', { locale: ru });
+}
+
 /**
  * Форматирование числа с пробелами (123456 → "123 456")
  */

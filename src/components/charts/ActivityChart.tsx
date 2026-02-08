@@ -9,14 +9,12 @@ import {
   Legend,
 } from 'recharts';
 import { activityChartData } from '@/data/mockData';
+import { formatChartDate } from '@/lib/formatters';
 
 export function ActivityChart() {
   const formattedData = activityChartData.map(item => ({
     ...item,
-    dateLabel: new Date(item.date).toLocaleDateString('ru-RU', { 
-      day: 'numeric', 
-      month: 'short' 
-    }),
+    dateLabel: formatChartDate(item.date),
   }));
 
   return (
