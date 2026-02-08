@@ -1,9 +1,7 @@
 import { PlaceholderPage } from '@/components/shared/PlaceholderPage';
 
 // Expert pages
-export function ExpertSchedule() {
-  return <PlaceholderPage title="Расписание" description="Управление расписанием консультаций" emoji="📅" />;
-}
+// ExpertSchedule moved to src/pages/expert/Schedule.tsx
 
 export function ExpertSessions() {
   return <PlaceholderPage title="Сессии" description="История и текущие сессии" emoji="💬" />;

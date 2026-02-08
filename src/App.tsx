@@ -15,7 +15,8 @@ import AdminReports from "@/pages/admin/Reports";
 // Expert pages
 import ExpertDashboard from "@/pages/expert/Dashboard";
 import ExpertSession from "@/pages/expert/Session";
-import { ExpertSchedule, ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
+import ExpertSchedule from "@/pages/expert/Schedule";
+import { ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
 
 // Quality pages
 import QualityDashboard from "@/pages/quality/Dashboard";
