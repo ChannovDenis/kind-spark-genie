@@ -25,7 +25,7 @@ import { QualityDialogs, QualityKnowledge, QualityTraining } from "@/pages/Place
 
 // Studio pages
 import StudioDashboard from "@/pages/studio/Dashboard";
-import { StudioGenerator } from "@/pages/PlaceholderPages";
+import StudioGenerator from "@/pages/studio/Generator";
 
 // Super admin pages
 import SuperDashboard from "@/pages/super/Dashboard";
