@@ -22,7 +22,8 @@ import { ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
 import QualityDashboard from "@/pages/quality/Dashboard";
 import DialogReview from "@/pages/quality/DialogReview";
 import QualityKnowledge from "@/pages/quality/Knowledge";
-import { QualityDialogs, QualityTraining } from "@/pages/PlaceholderPages";
+import QualityTraining from "@/pages/quality/Training";
+import { QualityDialogs } from "@/pages/PlaceholderPages";
 
 // Studio pages
 import StudioDashboard from "@/pages/studio/Dashboard";

@@ -16,10 +16,6 @@ export function QualityDialogs() {
   return <PlaceholderPage title="Разбор диалогов" description="Анализ качества AI-ответов" emoji="🔍" />;
 }
 
-export function QualityTraining() {
-  return <PlaceholderPage title="Дообучение" description="Настройка и дообучение моделей" emoji="🧠" />;
-}
-
 // Super admin pages
 export function SuperPricing() {
   return <PlaceholderPage title="Тарифы" description="Конструктор тарифных планов" emoji="💰" />;
