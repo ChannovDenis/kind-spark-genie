@@ -16,7 +16,9 @@ import AdminReports from "@/pages/admin/Reports";
 import ExpertDashboard from "@/pages/expert/Dashboard";
 import ExpertSession from "@/pages/expert/Session";
 import ExpertSchedule from "@/pages/expert/Schedule";
-import { ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
+import ExpertSessions from "@/pages/expert/Sessions";
+import ExpertConclusions from "@/pages/expert/Conclusions";
+
 
 // Quality pages
 import QualityDashboard from "@/pages/quality/Dashboard";
@@ -33,7 +35,9 @@ import StudioVideoAnalytics from "@/pages/studio/VideoAnalytics";
 
 // Super admin pages
 import SuperDashboard from "@/pages/super/Dashboard";
-import { SuperPricing, SuperSettings, SuperBuilder } from "@/pages/PlaceholderPages";
+import SuperPricing from "@/pages/super/Pricing";
+import SuperSettings from "@/pages/super/Settings";
+import SuperBuilder from "@/pages/super/Builder";
 
 import NotFound from "./pages/NotFound";
 
