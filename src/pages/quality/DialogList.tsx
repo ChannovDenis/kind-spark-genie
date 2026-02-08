@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import { DialogBulkActions } from '@/components/quality/DialogBulkActions';
 import { DialogFiltersPanel } from '@/components/quality/DialogFiltersPanel';
 import { AssignReviewerDialog } from '@/components/quality/AssignReviewerDialog';
 import { SaveFilterDialog } from '@/components/quality/SaveFilterDialog';
+import { DialogPagination } from '@/components/quality/DialogPagination';
 import { KeyboardShortcutsHelp } from '@/components/quality/KeyboardShortcutsHelp';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
@@ -29,7 +30,6 @@ import {
   DialogFilters,
   defaultFilters,
   SavedFilter,
-  QualityDialog
 } from '@/data/dialogsData';
 
 export default function DialogList() {
@@ -40,6 +40,10 @@ export default function DialogList() {
   const [savedFilters, setSavedFilters] = useState<SavedFilter[]>(initialSavedFilters);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(0);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   
   // Dialog states
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -108,6 +112,24 @@ export default function DialogList() {
     });
   }, [filters]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredDialogs.length / pageSize);
+  const paginatedDialogs = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredDialogs.slice(start, start + pageSize);
+  }, [filteredDialogs, currentPage, pageSize]);
+
+  // Reset to page 1 when filters change
+  const handleFiltersChange = (newFilters: DialogFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
   // Count active filters
   const activeFiltersCount = useMemo(() => {
     let count = 0;
@@ -165,7 +187,7 @@ export default function DialogList() {
   };
 
   const handleLoadFilter = (filter: SavedFilter) => {
-    setFilters(filter.filters);
+    handleFiltersChange(filter.filters);
     toast.info(`Применён фильтр "${filter.name}"`);
   };
 
@@ -178,13 +200,13 @@ export default function DialogList() {
     },
     {
       key: 'ArrowDown',
-      action: () => setFocusedIndex(i => Math.min(filteredDialogs.length - 1, i + 1)),
+      action: () => setFocusedIndex(i => Math.min(paginatedDialogs.length - 1, i + 1)),
       description: 'Следующий диалог',
     },
     {
       key: 'Enter',
       action: () => {
-        const dialog = filteredDialogs[focusedIndex];
+        const dialog = paginatedDialogs[focusedIndex];
         if (dialog) navigate(`/quality/dialogs/${dialog.id}`);
       },
       description: 'Открыть диалог',
@@ -192,7 +214,7 @@ export default function DialogList() {
     {
       key: ' ',
       action: () => {
-        const dialog = filteredDialogs[focusedIndex];
+        const dialog = paginatedDialogs[focusedIndex];
         if (dialog) {
           setSelectedIds(ids => 
             ids.includes(dialog.id) 
@@ -233,7 +255,7 @@ export default function DialogList() {
       action: () => setShortcutsOpen(true),
       description: 'Показать клавиши',
     },
-  ], [filteredDialogs, focusedIndex, selectedIds, navigate]);
+  ], [paginatedDialogs, focusedIndex, selectedIds, navigate]);
 
   useKeyboardShortcuts(shortcuts, true);
 
@@ -288,7 +310,7 @@ export default function DialogList() {
 
       <DialogSearchBar
         filters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={handleFiltersChange}
         onOpenAdvancedFilters={() => setFiltersOpen(true)}
         activeFiltersCount={activeFiltersCount}
       />
@@ -296,17 +318,17 @@ export default function DialogList() {
       <div className="flex flex-1 overflow-hidden">
         <DialogQuickFilters
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={handleFiltersChange}
           stats={dialogStats}
           savedFilters={savedFilters}
           onSaveFilter={() => setSaveFilterDialogOpen(true)}
           onLoadFilter={handleLoadFilter}
         />
         
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <ScrollArea className="flex-1">
             <DialogTable
-              dialogs={filteredDialogs}
+              dialogs={paginatedDialogs}
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
               onAssign={handleAssign}
@@ -315,6 +337,15 @@ export default function DialogList() {
               onFocusChange={setFocusedIndex}
             />
           </ScrollArea>
+          
+          <DialogPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={filteredDialogs.length}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </div>
       </div>
 
@@ -332,7 +363,7 @@ export default function DialogList() {
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
         filters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={handleFiltersChange}
         onSaveFilter={() => {
           setFiltersOpen(false);
           setSaveFilterDialogOpen(true);
