@@ -1,14 +1,17 @@
-import { useState, useMemo } from 'react';
-import { Plus, Filter, BarChart3, Layers, AlertTriangle, Brain, MessageSquare, Scale } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { Plus, BarChart3, Layers, AlertTriangle, Brain, MessageSquare, Scale, CheckSquare, Keyboard } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { TrainingCaseCard } from '@/components/quality/TrainingCaseCard';
 import { TrainingCaseDetail } from '@/components/quality/TrainingCaseDetail';
 import { TrainingBatchCard } from '@/components/quality/TrainingBatchCard';
+import { useKeyboardShortcuts, KeyboardShortcut } from '@/hooks/useKeyboardShortcuts';
+import { KeyboardShortcutsHelp } from '@/components/quality/KeyboardShortcutsHelp';
 import { 
   trainingCases, 
   trainingBatches, 
@@ -26,6 +29,8 @@ export default function Training() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [serviceFilter, setServiceFilter] = useState<string>('all');
+  const [checkedCases, setCheckedCases] = useState<Set<string>>(new Set());
+  const [showBulkSelect, setShowBulkSelect] = useState(false);
 
   const filteredCases = useMemo(() => {
     return trainingCases.filter(c => {
@@ -36,23 +41,106 @@ export default function Training() {
     });
   }, [statusFilter, categoryFilter, serviceFilter]);
 
-  const handleApprove = (trainingCase: TrainingCase) => {
+  const selectedIndex = useMemo(() => {
+    if (!selectedCase) return -1;
+    return filteredCases.findIndex(c => c.id === selectedCase.id);
+  }, [selectedCase, filteredCases]);
+
+  const handleApprove = useCallback((trainingCase: TrainingCase) => {
     toast.success(`Кейс одобрен и добавлен в очередь обучения`);
-    setSelectedCase(null);
-  };
+    // Move to next case
+    const currentIndex = filteredCases.findIndex(c => c.id === trainingCase.id);
+    if (currentIndex < filteredCases.length - 1) {
+      setSelectedCase(filteredCases[currentIndex + 1]);
+    } else {
+      setSelectedCase(null);
+    }
+  }, [filteredCases]);
 
-  const handleReject = (trainingCase: TrainingCase) => {
+  const handleReject = useCallback((trainingCase: TrainingCase) => {
     toast.info(`Кейс отклонён`);
-    setSelectedCase(null);
-  };
+    // Move to next case
+    const currentIndex = filteredCases.findIndex(c => c.id === trainingCase.id);
+    if (currentIndex < filteredCases.length - 1) {
+      setSelectedCase(filteredCases[currentIndex + 1]);
+    } else {
+      setSelectedCase(null);
+    }
+  }, [filteredCases]);
 
-  const handleEdit = (trainingCase: TrainingCase) => {
+  const handleEdit = useCallback((trainingCase: TrainingCase) => {
     toast.info(`Открыть редактор для кейса ${trainingCase.id}`);
-  };
+  }, []);
 
   const handleStartBatch = (batch: TrainingBatch) => {
     toast.success(`Обучение "${batch.name}" запущено`);
   };
+
+  const handleBulkApprove = () => {
+    toast.success(`Одобрено ${checkedCases.size} кейсов`);
+    setCheckedCases(new Set());
+  };
+
+  const handleBulkReject = () => {
+    toast.info(`Отклонено ${checkedCases.size} кейсов`);
+    setCheckedCases(new Set());
+  };
+
+  const handleCheckChange = (caseId: string, checked: boolean) => {
+    setCheckedCases(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(caseId);
+      } else {
+        next.delete(caseId);
+      }
+      return next;
+    });
+  };
+
+  // Keyboard shortcuts
+  const shortcuts: KeyboardShortcut[] = useMemo(() => [
+    {
+      key: 'a',
+      action: () => selectedCase && selectedCase.status === 'pending' && handleApprove(selectedCase),
+      description: 'Одобрить кейс',
+    },
+    {
+      key: 'r',
+      action: () => selectedCase && selectedCase.status === 'pending' && handleReject(selectedCase),
+      description: 'Отклонить кейс',
+    },
+    {
+      key: 'e',
+      action: () => selectedCase && handleEdit(selectedCase),
+      description: 'Редактировать',
+    },
+    {
+      key: 'ArrowDown',
+      action: () => {
+        if (selectedIndex < filteredCases.length - 1) {
+          setSelectedCase(filteredCases[selectedIndex + 1]);
+        }
+      },
+      description: 'Следующий кейс',
+    },
+    {
+      key: 'ArrowUp',
+      action: () => {
+        if (selectedIndex > 0) {
+          setSelectedCase(filteredCases[selectedIndex - 1]);
+        }
+      },
+      description: 'Предыдущий кейс',
+    },
+    {
+      key: 'b',
+      action: () => setShowBulkSelect(prev => !prev),
+      description: 'Режим выбора',
+    },
+  ], [selectedCase, selectedIndex, filteredCases, handleApprove, handleReject, handleEdit]);
+
+  useKeyboardShortcuts(shortcuts, true);
 
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
@@ -62,10 +150,23 @@ export default function Training() {
           title="Дообучение"
           description="Кейсы для fine-tuning AI-модели"
           actions={
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Добавить кейс
-            </Button>
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Keyboard className="h-4 w-4 mr-2" />
+                    Горячие клавиши
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72" align="end">
+                  <KeyboardShortcutsHelp shortcuts={shortcuts} />
+                </PopoverContent>
+              </Popover>
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Добавить кейс
+              </Button>
+            </div>
           }
         />
 
@@ -113,6 +214,29 @@ export default function Training() {
             <div className="border-r flex flex-col">
               {/* Filters */}
               <div className="p-3 border-b space-y-2">
+                {/* Bulk actions bar */}
+                {showBulkSelect && (
+                  <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg mb-2">
+                    <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
+                      Выбрано: {checkedCases.size}
+                    </span>
+                    {checkedCases.size > 0 && (
+                      <>
+                        <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={handleBulkApprove}>
+                          Одобрить все
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-6 text-xs text-destructive" onClick={handleBulkReject}>
+                          Отклонить все
+                        </Button>
+                      </>
+                    )}
+                    <Button size="sm" variant="ghost" className="h-6 text-xs ml-auto" onClick={() => setShowBulkSelect(false)}>
+                      Отмена
+                    </Button>
+                  </div>
+                )}
+
                 <div className="flex gap-2">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="h-8 text-xs">
@@ -167,6 +291,9 @@ export default function Training() {
                         onApprove={handleApprove}
                         onReject={handleReject}
                         isSelected={selectedCase?.id === c.id}
+                        showCheckbox={showBulkSelect}
+                        isChecked={checkedCases.has(c.id)}
+                        onCheckChange={(checked) => handleCheckChange(c.id, checked)}
                       />
                     ))
                   )}
@@ -180,6 +307,7 @@ export default function Training() {
               onApprove={handleApprove}
               onReject={handleReject}
               onEdit={handleEdit}
+              shortcuts={shortcuts}
             />
           </div>
         </TabsContent>
