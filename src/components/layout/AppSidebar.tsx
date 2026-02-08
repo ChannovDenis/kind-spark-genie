@@ -20,6 +20,8 @@ import {
   BarChart3,
   ChevronDown,
   ChevronRight,
+  Video,
+  Clapperboard,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -84,6 +86,15 @@ const menuGroups: MenuGroup[] = [
       { title: 'Разбор диалогов', url: '/quality/dialogs', icon: ListChecks },
       { title: 'База знаний', url: '/quality/knowledge', icon: Book },
       { title: 'Дообучение', url: '/quality/training', icon: Sparkles },
+    ],
+  },
+  {
+    label: 'Контент-студия',
+    emoji: '🎬',
+    basePath: '/studio',
+    items: [
+      { title: 'Видео', url: '/studio', icon: Video },
+      { title: 'Генератор', url: '/studio/generator', icon: Clapperboard },
     ],
   },
   {
