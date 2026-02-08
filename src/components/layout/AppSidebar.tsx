@@ -14,15 +14,18 @@ import {
   ListChecks,
   Book,
   Sparkles,
-  Wand2,
   Building2,
   Settings,
   BarChart3,
   ChevronDown,
   ChevronRight,
   Video,
-  Clapperboard,
   TrendingUp,
+  Newspaper,
+  Wallet,
+  Megaphone,
+  UserCog,
+  Eye,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -73,9 +76,10 @@ const menuGroups: MenuGroup[] = [
     basePath: '/expert',
     items: [
       { title: 'Кабинет', url: '/expert', icon: Headphones },
-      { title: 'Расписание', url: '/expert/schedule', icon: Calendar },
+      { title: 'Календарь', url: '/expert/calendar', icon: Calendar },
       { title: 'Сессии', url: '/expert/sessions', icon: MessageSquare },
       { title: 'Заключения', url: '/expert/conclusions', icon: FileCheck },
+      { title: 'Доходы', url: '/expert/earnings', icon: Wallet },
     ],
   },
   {
@@ -87,6 +91,7 @@ const menuGroups: MenuGroup[] = [
       { title: 'Разбор диалогов', url: '/quality/dialogs', icon: ListChecks },
       { title: 'База знаний', url: '/quality/knowledge', icon: Book },
       { title: 'Дообучение', url: '/quality/training', icon: Sparkles },
+      { title: 'Лог шёпота', url: '/quality/whisper-log', icon: Eye },
     ],
   },
   {
@@ -96,7 +101,8 @@ const menuGroups: MenuGroup[] = [
     items: [
       { title: 'Видео', url: '/studio', icon: Video },
       { title: 'Тренды', url: '/studio/trends', icon: TrendingUp },
-      { title: 'Генератор', url: '/studio/generator', icon: Clapperboard },
+      { title: 'Сценарии', url: '/studio/scenarios', icon: FileText },
+      { title: 'Лента', url: '/studio/feed', icon: Newspaper },
     ],
   },
   {
@@ -106,8 +112,10 @@ const menuGroups: MenuGroup[] = [
     items: [
       { title: 'Тенанты', url: '/super', icon: Building2 },
       { title: 'Тарифы', url: '/super/pricing', icon: BarChart3 },
+      { title: 'Кампании', url: '/super/campaigns', icon: Megaphone },
+      { title: 'Эксперты', url: '/super/experts', icon: UserCog },
+      { title: 'Аналитика', url: '/super/analytics', icon: BarChart3 },
       { title: 'Настройки', url: '/super/settings', icon: Settings },
-      { title: 'Конструктор', url: '/super/builder', icon: Wand2 },
     ],
   },
 ];

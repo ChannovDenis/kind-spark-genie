@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type Status = 'success' | 'warning' | 'error' | 'info' | 'pending' | 'in_progress' | 'resolved' | 'cancelled';
+export type Status = 'success' | 'warning' | 'error' | 'info' | 'pending' | 'in_progress' | 'resolved' | 'cancelled' | 'completed';
 
 interface StatusBadgeProps {
   status: Status;
@@ -40,6 +40,10 @@ const statusConfig: Record<Status, { className: string; defaultLabel: string }> 
   cancelled: {
     className: 'bg-muted/50 text-muted-foreground',
     defaultLabel: 'Отменено',
+  },
+  completed: {
+    className: 'status-badge-info',
+    defaultLabel: 'Завершено',
   },
 };
 
