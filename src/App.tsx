@@ -19,6 +19,7 @@ import { ExpertSchedule, ExpertSessions, ExpertConclusions } from "@/pages/Place
 
 // Quality pages
 import QualityDashboard from "@/pages/quality/Dashboard";
+import DialogReview from "@/pages/quality/DialogReview";
 import { QualityDialogs, QualityKnowledge, QualityTraining } from "@/pages/PlaceholderPages";
 
 // Super admin pages
@@ -56,6 +57,7 @@ const App = () => (
           {/* Quality routes */}
           <Route path="/quality" element={<MainLayout><QualityDashboard /></MainLayout>} />
           <Route path="/quality/dialogs" element={<MainLayout><QualityDialogs /></MainLayout>} />
+          <Route path="/quality/dialogs/:id" element={<MainLayout><DialogReview /></MainLayout>} />
           <Route path="/quality/knowledge" element={<MainLayout><QualityKnowledge /></MainLayout>} />
           <Route path="/quality/training" element={<MainLayout><QualityTraining /></MainLayout>} />
           

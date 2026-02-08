@@ -1,4 +1,5 @@
-import { ShieldCheck, AlertTriangle, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck, AlertTriangle, CheckCircle, XCircle, TrendingUp, ExternalLink } from 'lucide-react';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -99,9 +100,10 @@ export default function QualityDashboard() {
         
         <div className="space-y-2">
           {recentDialogs.map((dialog) => (
-            <div 
+            <Link 
+              to={`/quality/dialogs/${dialog.id}`}
               key={dialog.id}
-              className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer"
+              className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer group"
             >
               <div className={`w-3 h-3 rounded-full ${
                 dialog.status === 'good' ? 'bg-success' :
@@ -119,18 +121,21 @@ export default function QualityDashboard() {
                 )}
               </div>
 
-              <div className="text-right">
-                <div className={`font-bold ${
-                  dialog.score >= 80 ? 'text-success' :
-                  dialog.score >= 60 ? 'text-warning' : 'text-destructive'
-                }`}>
-                  {dialog.score}%
+              <div className="text-right flex items-center gap-3">
+                <div>
+                  <div className={`font-bold ${
+                    dialog.score >= 80 ? 'text-success' :
+                    dialog.score >= 60 ? 'text-warning' : 'text-destructive'
+                  }`}>
+                    {dialog.score}%
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatRelativeDate(dialog.time)}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {formatRelativeDate(dialog.time)}
-                </div>
+                <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
