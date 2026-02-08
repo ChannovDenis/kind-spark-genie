@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { formatChartDate } from '@/lib/formatters';
 
 // Генерируем данные для burn-down графика
 const generateBurndownData = () => {
@@ -19,8 +20,9 @@ const generateBurndownData = () => {
     const dailyUsage = Math.floor(Math.random() * 200) + 400;
     remaining = Math.max(0, remaining - dailyUsage);
     
+    const date = new Date(2026, 1, day); // Февраль 2026
     data.push({
-      day: `${day} фев`,
+      day: formatChartDate(date),
       planned: Math.round(planned),
       actual: remaining,
     });

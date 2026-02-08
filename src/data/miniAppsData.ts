@@ -1,4 +1,6 @@
 import { Scale, Heart, Brain, Wallet, Dumbbell, Shirt, PawPrint, Leaf, LucideIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export type MiniAppStatus = 'active' | 'draft' | 'testing';
 export type CategoryStatus = 'active' | 'testing' | 'draft';
@@ -178,7 +180,7 @@ const generateDailyData = () => {
     const date = new Date();
     date.setDate(date.getDate() - i);
     data.push({
-      date: date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
+      date: format(date, 'd MMM', { locale: ru }),
       requests: Math.floor(Math.random() * 40) + 40,
     });
   }
