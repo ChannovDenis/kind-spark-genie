@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Video,
   Clapperboard,
+  TrendingUp,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -94,6 +95,7 @@ const menuGroups: MenuGroup[] = [
     basePath: '/studio',
     items: [
       { title: 'Видео', url: '/studio', icon: Video },
+      { title: 'Тренды', url: '/studio/trends', icon: TrendingUp },
       { title: 'Генератор', url: '/studio/generator', icon: Clapperboard },
     ],
   },

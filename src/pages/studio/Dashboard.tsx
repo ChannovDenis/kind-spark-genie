@@ -13,13 +13,19 @@ import {
   Download,
   Trash2,
   Filter,
-  Search
+  Search,
+  Target,
+  Zap,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
+import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RetentionFunnel } from '@/components/studio/RetentionFunnel';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,71 +34,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-// Mock video data
-const recentVideos = [
-  {
-    id: 1,
-    title: 'Как оформить налоговый вычет за лечение',
-    thumbnail: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=225&fit=crop',
-    duration: '3:45',
-    status: 'ready',
-    views: 12453,
-    createdAt: '2026-02-08T10:30:00',
-    service: 'Юрист',
-  },
-  {
-    id: 2,
-    title: 'Первые симптомы диабета: что нужно знать',
-    thumbnail: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=225&fit=crop',
-    duration: '4:12',
-    status: 'processing',
-    views: 0,
-    createdAt: '2026-02-08T09:15:00',
-    service: 'Врач',
-  },
-  {
-    id: 3,
-    title: 'Как справиться с тревожностью: 5 техник',
-    thumbnail: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=225&fit=crop',
-    duration: '5:30',
-    status: 'ready',
-    views: 8921,
-    createdAt: '2026-02-07T16:45:00',
-    service: 'Психолог',
-  },
-  {
-    id: 4,
-    title: 'Инвестиции для начинающих: с чего начать',
-    thumbnail: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=225&fit=crop',
-    duration: '6:15',
-    status: 'ready',
-    views: 15678,
-    createdAt: '2026-02-07T14:20:00',
-    service: 'Финансист',
-  },
-  {
-    id: 5,
-    title: 'Права потребителя при возврате товара',
-    thumbnail: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=225&fit=crop',
-    duration: '4:00',
-    status: 'error',
-    views: 0,
-    createdAt: '2026-02-07T11:00:00',
-    service: 'Юрист',
-    error: 'Ошибка синтеза голоса',
-  },
-  {
-    id: 6,
-    title: 'Здоровый сон: рекомендации врача',
-    thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=225&fit=crop',
-    duration: '3:20',
-    status: 'ready',
-    views: 6234,
-    createdAt: '2026-02-06T18:30:00',
-    service: 'Врач',
-  },
-];
+import { 
+  mockVideosWithRetention, 
+  calculateAverageRetention, 
+  getTopPerformers, 
+  getBottomPerformers,
+  retentionBenchmarks 
+} from '@/data/studioData';
 
 const statusConfig = {
   ready: { label: 'Готов', status: 'success' as const },
@@ -108,9 +56,26 @@ export default function StudioDashboard() {
     toast.success(`Перезапуск генерации видео #${id}`);
   };
 
-  const filteredVideos = recentVideos.filter(video => 
+  const filteredVideos = mockVideosWithRetention.filter(video => 
     video.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Calculate average retention metrics
+  const avgRetention = calculateAverageRetention(mockVideosWithRetention);
+  const topPerformers = getTopPerformers(mockVideosWithRetention);
+  const bottomPerformers = getBottomPerformers(mockVideosWithRetention);
+
+  const getHookRateColor = (rate: number) => {
+    if (rate >= retentionBenchmarks.hookRate) return 'text-success';
+    if (rate >= retentionBenchmarks.hookRate - 10) return 'text-warning';
+    return 'text-destructive';
+  };
+
+  const getRetentionProgressColor = (rate: number) => {
+    if (rate >= retentionBenchmarks.hookRate) return '[&>div]:bg-success';
+    if (rate >= retentionBenchmarks.hookRate - 10) return '[&>div]:bg-warning';
+    return '[&>div]:bg-destructive';
+  };
 
   return (
     <div className="space-y-6">
@@ -118,14 +83,20 @@ export default function StudioDashboard() {
         title="Контент-студия"
         description="Генерация и управление AI-видео для клиентов"
         actions={
-          <Button onClick={() => navigate('/studio/generator')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Создать видео
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => navigate('/studio/trends')}>
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Тренды
+            </Button>
+            <Button onClick={() => navigate('/studio/generator')}>
+              <Plus className="h-4 w-4 mr-2" />
+              Создать видео
+            </Button>
+          </div>
         }
       />
 
-      {/* Metrics */}
+      {/* Metrics - Updated with Retention */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <MetricCard
           title="Всего видео"
@@ -142,24 +113,102 @@ export default function StudioDashboard() {
           icon={<Eye className="h-5 w-5" />}
         />
         <MetricCard
-          title="В обработке"
-          value="3"
-          icon={<Clock className="h-5 w-5 text-warning" />}
+          title="Ср. Retention"
+          value={`${avgRetention.hookRate}%`}
+          change={avgRetention.hookRate - retentionBenchmarks.hookRate}
+          changeLabel="vs бенчмарк"
+          icon={<Target className="h-5 w-5 text-primary" />}
         />
         <MetricCard
-          title="Успешно"
-          value="98.2%"
-          change={1.2}
+          title="Hook Rate"
+          value={`${avgRetention.hookRate}%`}
+          change={4}
           changeLabel="за месяц"
-          icon={<CheckCircle className="h-5 w-5 text-success" />}
+          icon={<Zap className="h-5 w-5 text-warning" />}
         />
         <MetricCard
           title="Ср. время"
           value="2.5 мин"
           change={-15}
           changeLabel="ускорение"
-          icon={<TrendingUp className="h-5 w-5" />}
+          icon={<Clock className="h-5 w-5" />}
         />
+      </div>
+
+      {/* Retention Analytics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Retention Funnel */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Воронка удержания
+              </CardTitle>
+              <span className="text-xs text-muted-foreground">За 7 дней</span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <RetentionFunnel 
+              hookRate={avgRetention.hookRate}
+              retention10s={avgRetention.retention10s}
+              retention30s={avgRetention.retention30s}
+              completionRate={avgRetention.completionRate}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Top / Bottom Performers */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Топ и требуют улучшения</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-success mb-2 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Лучшие по удержанию
+              </h4>
+              <div className="space-y-2">
+                {topPerformers.map((video, idx) => (
+                  <div 
+                    key={video.id}
+                    className="flex items-center justify-between p-2 rounded bg-success/10 cursor-pointer hover:bg-success/20 transition-colors"
+                    onClick={() => navigate(`/studio/video/${video.id}`)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground w-4">{idx + 1}.</span>
+                      <span className="text-sm truncate max-w-[200px]">{video.title}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-success">{video.hookRate}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-destructive mb-2 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" />
+                Требуют улучшения
+              </h4>
+              <div className="space-y-2">
+                {bottomPerformers.map((video, idx) => (
+                  <div 
+                    key={video.id}
+                    className="flex items-center justify-between p-2 rounded bg-destructive/10 cursor-pointer hover:bg-destructive/20 transition-colors"
+                    onClick={() => navigate(`/studio/video/${video.id}`)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground w-4">{idx + 1}.</span>
+                      <span className="text-sm truncate max-w-[200px]">{video.title}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-destructive">{video.hookRate}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters & Search */}
@@ -179,12 +228,13 @@ export default function StudioDashboard() {
         </Button>
       </div>
 
-      {/* Video Grid */}
+      {/* Video Grid - Updated with Retention */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredVideos.map((video) => (
           <div 
             key={video.id}
             className="glass-card overflow-hidden group cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+            onClick={() => video.status === 'ready' && navigate(`/studio/video/${video.id}`)}
           >
             {/* Thumbnail */}
             <div className="relative aspect-video bg-muted overflow-hidden">
@@ -215,7 +265,10 @@ export default function StudioDashboard() {
                   {video.status === 'error' && (
                     <div className="flex flex-col items-center gap-2">
                       <AlertCircle className="h-8 w-8 text-destructive" />
-                      <Button size="sm" variant="secondary" onClick={() => handleRetry(video.id)}>
+                      <Button size="sm" variant="secondary" onClick={(e) => {
+                        e.stopPropagation();
+                        handleRetry(video.id);
+                      }}>
                         Повторить
                       </Button>
                     </div>
@@ -254,11 +307,20 @@ export default function StudioDashboard() {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => navigate(`/studio/video/${video.id}`)}>
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Аналитика
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Eye className="h-4 w-4 mr-2" />
                       Просмотреть
@@ -286,6 +348,26 @@ export default function StudioDashboard() {
                   label={statusConfig[video.status].label} 
                 />
               </div>
+
+              {/* Retention Bar - NEW */}
+              {video.status === 'ready' && video.hookRate > 0 && (
+                <div className="mt-3 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Retention</span>
+                    <span className={cn("font-medium", getHookRateColor(video.hookRate))}>
+                      {video.hookRate}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={video.hookRate} 
+                    className={cn("h-1.5", getRetentionProgressColor(video.hookRate))}
+                  />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Hook: {video.hookRate}%</span>
+                    <span>@10s: {video.retention10s}%</span>
+                  </div>
+                </div>
+              )}
 
               {/* Error message */}
               {video.error && (
