@@ -16,10 +16,6 @@ export function QualityDialogs() {
   return <PlaceholderPage title="Разбор диалогов" description="Анализ качества AI-ответов" emoji="🔍" />;
 }
 
-export function QualityKnowledge() {
-  return <PlaceholderPage title="База знаний" description="Управление базой знаний AI" emoji="📚" />;
-}
-
 export function QualityTraining() {
   return <PlaceholderPage title="Дообучение" description="Настройка и дообучение моделей" emoji="🧠" />;
 }
