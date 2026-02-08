@@ -26,6 +26,8 @@ import { QualityDialogs, QualityKnowledge, QualityTraining } from "@/pages/Place
 // Studio pages
 import StudioDashboard from "@/pages/studio/Dashboard";
 import StudioGenerator from "@/pages/studio/Generator";
+import StudioTrends from "@/pages/studio/Trends";
+import StudioVideoAnalytics from "@/pages/studio/VideoAnalytics";
 
 // Super admin pages
 import SuperDashboard from "@/pages/super/Dashboard";
@@ -68,6 +70,8 @@ const App = () => (
           
           {/* Studio routes */}
           <Route path="/studio" element={<MainLayout><StudioDashboard /></MainLayout>} />
+          <Route path="/studio/trends" element={<MainLayout><StudioTrends /></MainLayout>} />
+          <Route path="/studio/video/:id" element={<MainLayout><StudioVideoAnalytics /></MainLayout>} />
           <Route path="/studio/generator" element={<MainLayout><StudioGenerator /></MainLayout>} />
           
           {/* Super admin routes */}
