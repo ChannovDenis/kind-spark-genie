@@ -45,6 +45,8 @@ import SuperCampaigns from "@/pages/super/Campaigns";
 import SuperCampaignEditor from "@/pages/super/CampaignEditor";
 import SuperExperts from "@/pages/super/Experts";
 import SuperAnalytics from "@/pages/super/Analytics";
+import SuperMiniApps from "@/pages/super/MiniApps";
+import SuperMiniAppConfig from "@/pages/super/MiniAppConfig";
 
 import NotFound from "./pages/NotFound";
 
@@ -100,6 +102,8 @@ const App = () => (
           <Route path="/super/campaigns/new" element={<MainLayout><SuperCampaignEditor /></MainLayout>} />
           <Route path="/super/campaigns/:id" element={<MainLayout><SuperCampaignEditor /></MainLayout>} />
           <Route path="/super/experts" element={<MainLayout><SuperExperts /></MainLayout>} />
+          <Route path="/super/mini-apps" element={<MainLayout><SuperMiniApps /></MainLayout>} />
+          <Route path="/super/mini-apps/:id/config" element={<MainLayout><SuperMiniAppConfig /></MainLayout>} />
           <Route path="/super/analytics" element={<MainLayout><SuperAnalytics /></MainLayout>} />
           
           {/* 404 */}
