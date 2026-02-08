@@ -26,6 +26,7 @@ import {
   Megaphone,
   UserCog,
   Eye,
+  AppWindow,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -114,6 +115,7 @@ const menuGroups: MenuGroup[] = [
       { title: 'Тарифы', url: '/super/pricing', icon: BarChart3 },
       { title: 'Кампании', url: '/super/campaigns', icon: Megaphone },
       { title: 'Эксперты', url: '/super/experts', icon: UserCog },
+      { title: 'Мини-приложения', url: '/super/mini-apps', icon: AppWindow },
       { title: 'Аналитика', url: '/super/analytics', icon: BarChart3 },
       { title: 'Настройки', url: '/super/settings', icon: Settings },
     ],
