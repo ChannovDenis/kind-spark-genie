@@ -11,12 +11,7 @@ export function ExpertConclusions() {
   return <PlaceholderPage title="Заключения" description="Медицинские и юридические заключения" emoji="📋" />;
 }
 
-// Quality pages
-export function QualityDialogs() {
-  return <PlaceholderPage title="Разбор диалогов" description="Анализ качества AI-ответов" emoji="🔍" />;
-}
-
-// Super admin pages
+// Quality pages - DialogList moved to src/pages/quality/DialogList.tsx
 export function SuperPricing() {
   return <PlaceholderPage title="Тарифы" description="Конструктор тарифных планов" emoji="💰" />;
 }
