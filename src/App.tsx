@@ -20,10 +20,10 @@ import { ExpertSessions, ExpertConclusions } from "@/pages/PlaceholderPages";
 
 // Quality pages
 import QualityDashboard from "@/pages/quality/Dashboard";
+import DialogList from "@/pages/quality/DialogList";
 import DialogReview from "@/pages/quality/DialogReview";
 import QualityKnowledge from "@/pages/quality/Knowledge";
 import QualityTraining from "@/pages/quality/Training";
-import { QualityDialogs } from "@/pages/PlaceholderPages";
 
 // Studio pages
 import StudioDashboard from "@/pages/studio/Dashboard";
@@ -65,7 +65,7 @@ const App = () => (
           
           {/* Quality routes */}
           <Route path="/quality" element={<MainLayout><QualityDashboard /></MainLayout>} />
-          <Route path="/quality/dialogs" element={<MainLayout><QualityDialogs /></MainLayout>} />
+          <Route path="/quality/dialogs" element={<MainLayout><DialogList /></MainLayout>} />
           <Route path="/quality/dialogs/:id" element={<MainLayout><DialogReview /></MainLayout>} />
           <Route path="/quality/knowledge" element={<MainLayout><QualityKnowledge /></MainLayout>} />
           <Route path="/quality/training" element={<MainLayout><QualityTraining /></MainLayout>} />
