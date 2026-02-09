@@ -70,8 +70,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             
-            {/* Redirect root to admin dashboard */}
-            <Route path="/" element={<Navigate to="/admin" replace />} />
+            {/* Redirect root to expert dashboard (most common role for new users) */}
+            <Route path="/" element={<Navigate to="/expert" replace />} />
             
             {/* Admin routes - require partner_admin or higher */}
             <Route path="/admin" element={

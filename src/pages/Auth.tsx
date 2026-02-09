@@ -17,7 +17,7 @@ const nameSchema = z.string().min(2, 'Имя должно содержать м�
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signIn, signUp, loading: authLoading } = useAuth();
+  const { user, role, signIn, signUp, loading: authLoading } = useAuth();
   
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -25,13 +25,31 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string }>({});
 
+  // Get default route based on user role
+  const getDefaultRoute = () => {
+    switch (role) {
+      case 'super_admin':
+        return '/super';
+      case 'partner_admin':
+        return '/admin';
+      case 'quality_manager':
+        return '/quality';
+      case 'expert':
+        return '/expert';
+      default:
+        return '/expert'; // Default for new users
+    }
+  };
+
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      const from = (location.state as any)?.from?.pathname || '/admin';
-      navigate(from, { replace: true });
+      const from = (location.state as any)?.from?.pathname;
+      // Only use saved path if it's not the auth page
+      const redirectTo = from && from !== '/auth' ? from : getDefaultRoute();
+      navigate(redirectTo, { replace: true });
     }
-  }, [user, authLoading, navigate, location]);
+  }, [user, role, authLoading, navigate, location]);
 
   const validateLogin = () => {
     const newErrors: { email?: string; password?: string } = {};
