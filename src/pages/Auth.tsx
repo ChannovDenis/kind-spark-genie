@@ -10,9 +10,17 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock, User } from 'lucide-react';
 import { z } from 'zod';
 
-const emailSchema = z.string().email('Введите корректный email');
-const passwordSchema = z.string().min(6, 'Пароль должен содержать минимум 6 символов');
-const nameSchema = z.string().min(2, 'Имя должно содержать минимум 2 символа');
+const emailSchema = z.string().email('Введите корректный email').max(255, 'Email слишком длинный');
+const passwordSchema = z.string()
+  .min(8, 'Пароль должен содержать минимум 8 символов')
+  .max(72, 'Пароль слишком длинный')
+  .regex(/[A-Z]/, 'Пароль должен содержать хотя бы одну заглавную букву')
+  .regex(/[a-z]/, 'Пароль должен содержать хотя бы одну строчную букву')
+  .regex(/[0-9]/, 'Пароль должен содержать хотя бы одну цифру');
+const nameSchema = z.string()
+  .min(2, 'Имя должно содержать минимум 2 символа')
+  .max(100, 'Имя слишком длинное')
+  .regex(/^[a-zA-Zа-яА-ЯёЁ\s-]+$/, 'Имя может содержать только буквы, пробелы и дефисы');
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -249,7 +257,7 @@ export default function Auth() {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Минимум 6 символов"
+                      placeholder="Минимум 8 символов, A-Z, a-z, 0-9"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10"
