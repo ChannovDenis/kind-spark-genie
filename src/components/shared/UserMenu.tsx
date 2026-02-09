@@ -1,4 +1,4 @@
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Settings, User, Loader2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,16 +8,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useTenant } from '@/contexts/TenantContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Badge } from '@/components/ui/badge';
+
+const roleLabels: Record<string, string> = {
+  super_admin: 'Супер-админ',
+  partner_admin: 'Партнёр',
+  quality_manager: 'Quality',
+  expert: 'Эксперт',
+};
 
 export function UserMenu() {
-  const { currentUser } = useTenant();
+  const { user, profile, role, signOut, loading } = useAuth();
   
-  const initials = currentUser.name
+  if (loading) {
+    return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const displayName = profile?.full_name || user.email?.split('@')[0] || 'Пользователь';
+  const initials = displayName
     .split(' ')
     .map(n => n[0])
     .join('')
-    .toUpperCase();
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <DropdownMenu>
@@ -30,12 +48,17 @@ export function UserMenu() {
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px]">
+      <DropdownMenuContent align="end" className="w-[220px]">
         <DropdownMenuLabel>
-          <div className="font-medium">{currentUser.name}</div>
+          <div className="font-medium">{displayName}</div>
           <div className="text-xs text-muted-foreground font-normal">
-            {currentUser.email}
+            {user.email}
           </div>
+          {role && (
+            <Badge variant="secondary" className="mt-2 text-xs">
+              {roleLabels[role] || role}
+            </Badge>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
@@ -47,7 +70,7 @@ export function UserMenu() {
           Настройки
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive">
+        <DropdownMenuItem className="text-destructive" onClick={signOut}>
           <LogOut className="h-4 w-4 mr-2" />
           Выйти
         </DropdownMenuItem>

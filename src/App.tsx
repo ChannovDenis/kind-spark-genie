@@ -3,7 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
+
+// Auth pages
+import Auth from "@/pages/Auth";
+import Unauthorized from "@/pages/Unauthorized";
 
 // Admin pages
 import AdminDashboard from "@/pages/admin/Dashboard";
@@ -58,57 +64,199 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Redirect root to admin dashboard */}
-          <Route path="/" element={<Navigate to="/admin" replace />} />
-          
-          {/* Admin routes */}
-          <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />
-          <Route path="/admin/billing" element={<MainLayout><AdminBilling /></MainLayout>} />
-          <Route path="/admin/users" element={<MainLayout><AdminUsers /></MainLayout>} />
-          <Route path="/admin/branding" element={<MainLayout><AdminBranding /></MainLayout>} />
-          <Route path="/admin/reports" element={<MainLayout><AdminReports /></MainLayout>} />
-          
-          {/* Expert routes */}
-          <Route path="/expert" element={<MainLayout><ExpertDashboard /></MainLayout>} />
-          <Route path="/expert/calendar" element={<MainLayout><ExpertSchedule /></MainLayout>} />
-          <Route path="/expert/sessions" element={<MainLayout><ExpertSessions /></MainLayout>} />
-          <Route path="/expert/session/:id" element={<MainLayout><ExpertSession /></MainLayout>} />
-          <Route path="/expert/conclusions" element={<MainLayout><ExpertConclusions /></MainLayout>} />
-          <Route path="/expert/earnings" element={<MainLayout><ExpertEarnings /></MainLayout>} />
-          
-          {/* Quality routes */}
-          <Route path="/quality" element={<MainLayout><QualityDashboard /></MainLayout>} />
-          <Route path="/quality/dialogs" element={<MainLayout><DialogList /></MainLayout>} />
-          <Route path="/quality/dialogs/:id" element={<MainLayout><DialogReview /></MainLayout>} />
-          <Route path="/quality/knowledge" element={<MainLayout><QualityKnowledge /></MainLayout>} />
-          <Route path="/quality/training" element={<MainLayout><QualityTraining /></MainLayout>} />
-          <Route path="/quality/whisper-log" element={<MainLayout><WhisperLog /></MainLayout>} />
-          
-          {/* Studio routes */}
-          <Route path="/studio" element={<MainLayout><StudioDashboard /></MainLayout>} />
-          <Route path="/studio/trends" element={<MainLayout><StudioTrends /></MainLayout>} />
-          <Route path="/studio/video/:id" element={<MainLayout><StudioVideoAnalytics /></MainLayout>} />
-          <Route path="/studio/scenarios" element={<MainLayout><StudioScenarios /></MainLayout>} />
-          <Route path="/studio/scenarios/:id" element={<MainLayout><StudioScenarioEditor /></MainLayout>} />
-          <Route path="/studio/feed" element={<MainLayout><StudioFeed /></MainLayout>} />
-          
-          {/* Super admin routes */}
-          <Route path="/super" element={<MainLayout><SuperDashboard /></MainLayout>} />
-          <Route path="/super/pricing" element={<MainLayout><SuperPricing /></MainLayout>} />
-          <Route path="/super/settings" element={<MainLayout><SuperSettings /></MainLayout>} />
-          <Route path="/super/tenants/:id" element={<MainLayout><SuperTenantDetail /></MainLayout>} />
-          <Route path="/super/campaigns" element={<MainLayout><SuperCampaigns /></MainLayout>} />
-          <Route path="/super/campaigns/new" element={<MainLayout><SuperCampaignEditor /></MainLayout>} />
-          <Route path="/super/campaigns/:id" element={<MainLayout><SuperCampaignEditor /></MainLayout>} />
-          <Route path="/super/experts" element={<MainLayout><SuperExperts /></MainLayout>} />
-          <Route path="/super/mini-apps" element={<MainLayout><SuperMiniApps /></MainLayout>} />
-          <Route path="/super/mini-apps/:id/config" element={<MainLayout><SuperMiniAppConfig /></MainLayout>} />
-          <Route path="/super/analytics" element={<MainLayout><SuperAnalytics /></MainLayout>} />
-          
-          {/* 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            
+            {/* Redirect root to admin dashboard */}
+            <Route path="/" element={<Navigate to="/admin" replace />} />
+            
+            {/* Admin routes - require partner_admin or higher */}
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><AdminDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/billing" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><AdminBilling /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><AdminUsers /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/branding" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><AdminBranding /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/reports" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><AdminReports /></MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Expert routes - require expert role or higher */}
+            <Route path="/expert" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/expert/calendar" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertSchedule /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/expert/sessions" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertSessions /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/expert/session/:id" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertSession /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/expert/conclusions" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertConclusions /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/expert/earnings" element={
+              <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
+                <MainLayout><ExpertEarnings /></MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Quality routes - require quality_manager or higher */}
+            <Route path="/quality" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><QualityDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/quality/dialogs" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><DialogList /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/quality/dialogs/:id" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><DialogReview /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/quality/knowledge" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><QualityKnowledge /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/quality/training" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><QualityTraining /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/quality/whisper-log" element={
+              <ProtectedRoute allowedRoles={['quality_manager', 'partner_admin', 'super_admin']}>
+                <MainLayout><WhisperLog /></MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Studio routes - require partner_admin or higher */}
+            <Route path="/studio" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/studio/trends" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioTrends /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/studio/video/:id" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioVideoAnalytics /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/studio/scenarios" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioScenarios /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/studio/scenarios/:id" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioScenarioEditor /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/studio/feed" element={
+              <ProtectedRoute allowedRoles={['partner_admin', 'super_admin']}>
+                <MainLayout><StudioFeed /></MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Super admin routes - require super_admin only */}
+            <Route path="/super" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/pricing" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperPricing /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/settings" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperSettings /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/tenants/:id" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperTenantDetail /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/campaigns" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperCampaigns /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/campaigns/new" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperCampaignEditor /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/campaigns/:id" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperCampaignEditor /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/experts" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperExperts /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/mini-apps" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperMiniApps /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/mini-apps/:id/config" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperMiniAppConfig /></MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/super/analytics" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><SuperAnalytics /></MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
