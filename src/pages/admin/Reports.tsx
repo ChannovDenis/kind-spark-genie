@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Download, FileText, Table, FileSpreadsheet, Calendar, Filter } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { mockReports, Report } from '@/data/mockData';
@@ -214,7 +215,10 @@ export default function AdminReports() {
             <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
               Отмена
             </Button>
-            <Button onClick={() => setIsCreateOpen(false)}>
+            <Button onClick={() => {
+              toast.success('Отчёт формируется...');
+              setIsCreateOpen(false);
+            }}>
               Сформировать
             </Button>
           </DialogFooter>

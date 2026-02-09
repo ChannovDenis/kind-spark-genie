@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Upload, Smartphone, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +28,7 @@ export default function AdminBranding() {
         title="Брендинг"
         description="Настройка внешнего вида приложения для пользователей"
         actions={
-          <Button>Сохранить изменения</Button>
+          <Button onClick={() => toast.success('Изменения сохранены')}>Сохранить изменения</Button>
         }
       />
 
