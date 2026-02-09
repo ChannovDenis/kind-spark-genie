@@ -36,17 +36,17 @@ const defaultTenants: Tenant[] = [
     status: 'active',
   },
   {
-    id: 'gazprombank',
-    name: 'Газпромбанк',
-    logo: '🏦',
+    id: 'tenant-a',
+    name: 'Тенант A',
+    logo: '🏢',
     accentColor: '#10B981',
     plan: 'enterprise',
     usersCount: 45000,
     status: 'active',
   },
   {
-    id: 'wildberries',
-    name: 'Wildberries',
+    id: 'tenant-b',
+    name: 'Тенант B',
     logo: '📦',
     accentColor: '#8B5CF6',
     plan: 'business',
@@ -54,8 +54,8 @@ const defaultTenants: Tenant[] = [
     status: 'active',
   },
   {
-    id: 'mec',
-    name: 'МЭЦ',
+    id: 'tenant-c',
+    name: 'Тенант C',
     logo: '🏥',
     accentColor: '#F59E0B',
     plan: 'starter',
@@ -66,8 +66,8 @@ const defaultTenants: Tenant[] = [
 
 const defaultUser: CurrentUser = {
   id: 'user-1',
-  name: 'Анна Петрова',
-  email: 'anna.petrova@dobroservice.ru',
+  name: 'Demo User',
+  email: 'demo@example.com',
   avatar: '',
   role: 'partner_admin',
 };
