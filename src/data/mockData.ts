@@ -24,15 +24,15 @@ export interface Escalation {
   expertName?: string;
 }
 
-// Mock-эскалации
+// Mock-эскалации (демонстрационные данные)
 export const mockEscalations: Escalation[] = [
   {
     id: 'esc-1',
     userId: 'u-1',
-    userName: 'Иван Сидоров',
+    userName: 'Клиент 1',
     userAvatar: '',
     service: 'lawyer',
-    topic: 'Расторжение договора аренды',
+    topic: 'Вопрос по договору',
     status: 'pending',
     priority: 'high',
     createdAt: '2026-02-08T10:30:00',
@@ -40,46 +40,46 @@ export const mockEscalations: Escalation[] = [
   {
     id: 'esc-2',
     userId: 'u-2',
-    userName: 'Мария Козлова',
+    userName: 'Клиент 2',
     userAvatar: '',
     service: 'doctor',
-    topic: 'Консультация по результатам анализов',
+    topic: 'Консультация по результатам',
     status: 'in_progress',
     priority: 'medium',
     createdAt: '2026-02-08T09:15:00',
-    expertName: 'Др. Смирнов А.В.',
+    expertName: 'Эксперт 1',
   },
   {
     id: 'esc-3',
     userId: 'u-3',
-    userName: 'Алексей Новиков',
+    userName: 'Клиент 3',
     userAvatar: '',
     service: 'psychologist',
-    topic: 'Тревожное расстройство',
+    topic: 'Психологическая консультация',
     status: 'in_progress',
     priority: 'high',
     createdAt: '2026-02-07T16:45:00',
-    expertName: 'Волкова Е.С.',
+    expertName: 'Эксперт 2',
   },
   {
     id: 'esc-4',
     userId: 'u-4',
-    userName: 'Елена Федорова',
+    userName: 'Клиент 4',
     userAvatar: '',
     service: 'financier',
-    topic: 'Оптимизация налогов для ИП',
+    topic: 'Финансовая консультация',
     status: 'resolved',
     priority: 'low',
     createdAt: '2026-02-06T14:20:00',
-    expertName: 'Петров И.М.',
+    expertName: 'Эксперт 3',
   },
   {
     id: 'esc-5',
     userId: 'u-5',
-    userName: 'Дмитрий Орлов',
+    userName: 'Клиент 5',
     userAvatar: '',
     service: 'lawyer',
-    topic: 'Защита прав потребителя',
+    topic: 'Защита прав',
     status: 'pending',
     priority: 'medium',
     createdAt: '2026-02-08T08:00:00',
@@ -102,8 +102,8 @@ export interface PartnerUser {
 export const mockUsers: PartnerUser[] = [
   {
     id: 'pu-1',
-    name: 'Сергей Васильев',
-    email: 's.vasilev@company.ru',
+    name: 'Пользователь 1',
+    email: 'user1@example.com',
     avatar: '',
     department: 'Отдел продаж',
     role: 'Менеджер',
@@ -113,8 +113,8 @@ export const mockUsers: PartnerUser[] = [
   },
   {
     id: 'pu-2',
-    name: 'Ольга Миронова',
-    email: 'o.mironova@company.ru',
+    name: 'Пользователь 2',
+    email: 'user2@example.com',
     avatar: '',
     department: 'HR',
     role: 'Специалист',
@@ -124,8 +124,8 @@ export const mockUsers: PartnerUser[] = [
   },
   {
     id: 'pu-3',
-    name: 'Андрей Кузнецов',
-    email: 'a.kuznetsov@company.ru',
+    name: 'Пользователь 3',
+    email: 'user3@example.com',
     avatar: '',
     department: 'IT',
     role: 'Разработчик',
@@ -135,8 +135,8 @@ export const mockUsers: PartnerUser[] = [
   },
   {
     id: 'pu-4',
-    name: 'Наталья Белова',
-    email: 'n.belova@company.ru',
+    name: 'Пользователь 4',
+    email: 'user4@example.com',
     avatar: '',
     department: 'Бухгалтерия',
     role: 'Главный бухгалтер',
@@ -146,8 +146,8 @@ export const mockUsers: PartnerUser[] = [
   },
   {
     id: 'pu-5',
-    name: 'Виктор Соколов',
-    email: 'v.sokolov@company.ru',
+    name: 'Пользователь 5',
+    email: 'user5@example.com',
     avatar: '',
     department: 'Маркетинг',
     role: 'Директор',
@@ -242,14 +242,14 @@ export interface ExpertSession {
 }
 
 export const expertSessions: ExpertSession[] = [
-  { id: 'ses-1', clientName: 'Иван Петров', topic: 'Расторжение трудового договора', date: '2026-02-08T14:00:00', duration: 18, rating: 4.8, status: 'completed', service: 'lawyer', conclusionId: 'con-1' },
-  { id: 'ses-2', clientName: 'Мария Козлова', topic: 'Консультация по аренде', date: '2026-02-07T15:30:00', duration: 25, rating: 5.0, status: 'completed', service: 'lawyer', conclusionId: 'con-2' },
-  { id: 'ses-3', clientName: 'Алексей Новиков', topic: 'Оптимизация налогов', date: '2026-02-06T10:00:00', duration: 12, rating: 4.5, status: 'completed', service: 'financier', conclusionId: 'con-3' },
-  { id: 'ses-4', clientName: 'Елена Сидорова', topic: 'Консультация по давлению', date: '2026-02-05T11:30:00', duration: 22, rating: 4.9, status: 'completed', service: 'doctor', conclusionId: 'con-4' },
-  { id: 'ses-5', clientName: 'Дмитрий Орлов', topic: 'Тревожные состояния', date: '2026-02-04T16:00:00', duration: 35, rating: 5.0, status: 'completed', service: 'psychologist', conclusionId: 'con-5' },
-  { id: 'ses-6', clientName: 'Анна Белова', topic: 'Защита прав потребителя', date: '2026-02-08T17:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
-  { id: 'ses-7', clientName: 'Сергей Васильев', topic: 'Наследственные вопросы', date: '2026-02-09T10:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
-  { id: 'ses-8', clientName: 'Ольга Миронова', topic: 'Стресс на работе', date: '2026-02-03T14:00:00', duration: 0, rating: null, status: 'cancelled', service: 'psychologist', conclusionId: null },
+  { id: 'ses-1', clientName: 'Клиент A', topic: 'Трудовой договор', date: '2026-02-08T14:00:00', duration: 18, rating: 4.8, status: 'completed', service: 'lawyer', conclusionId: 'con-1' },
+  { id: 'ses-2', clientName: 'Клиент B', topic: 'Консультация по аренде', date: '2026-02-07T15:30:00', duration: 25, rating: 5.0, status: 'completed', service: 'lawyer', conclusionId: 'con-2' },
+  { id: 'ses-3', clientName: 'Клиент C', topic: 'Налоговая консультация', date: '2026-02-06T10:00:00', duration: 12, rating: 4.5, status: 'completed', service: 'financier', conclusionId: 'con-3' },
+  { id: 'ses-4', clientName: 'Клиент D', topic: 'Медицинская консультация', date: '2026-02-05T11:30:00', duration: 22, rating: 4.9, status: 'completed', service: 'doctor', conclusionId: 'con-4' },
+  { id: 'ses-5', clientName: 'Клиент E', topic: 'Психологическая поддержка', date: '2026-02-04T16:00:00', duration: 35, rating: 5.0, status: 'completed', service: 'psychologist', conclusionId: 'con-5' },
+  { id: 'ses-6', clientName: 'Клиент F', topic: 'Защита прав', date: '2026-02-08T17:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
+  { id: 'ses-7', clientName: 'Клиент G', topic: 'Наследство', date: '2026-02-09T10:00:00', duration: 0, rating: null, status: 'scheduled', service: 'lawyer', conclusionId: null },
+  { id: 'ses-8', clientName: 'Клиент H', topic: 'Консультация', date: '2026-02-03T14:00:00', duration: 0, rating: null, status: 'cancelled', service: 'psychologist', conclusionId: null },
 ];
 
 export type ConclusionType = 'consultation' | 'referral' | 'general';
@@ -266,11 +266,11 @@ export interface ExpertConclusion {
 }
 
 export const expertConclusions: ExpertConclusion[] = [
-  { id: 'con-1', clientName: 'Иван Петров', sessionId: 'ses-1', type: 'consultation', date: '2026-02-08T14:30:00', status: 'completed', text: 'Проведена консультация по расторжению трудового договора. Рекомендовано обратиться в трудовую инспекцию.' },
-  { id: 'con-2', clientName: 'Мария Козлова', sessionId: 'ses-2', type: 'consultation', date: '2026-02-07T16:00:00', status: 'sent', text: 'Разъяснены права арендатора при расторжении договора аренды.' },
-  { id: 'con-3', clientName: 'Алексей Новиков', sessionId: 'ses-3', type: 'general', date: '2026-02-06T10:30:00', status: 'draft', text: 'Черновик заключения по оптимизации налогообложения для ИП.' },
-  { id: 'con-4', clientName: 'Елена Сидорова', sessionId: 'ses-4', type: 'referral', date: '2026-02-05T12:00:00', status: 'completed', text: 'Направление к кардиологу для дополнительного обследования.' },
-  { id: 'con-5', clientName: 'Дмитрий Орлов', sessionId: 'ses-5', type: 'consultation', date: '2026-02-04T17:00:00', status: 'completed', text: 'Проведена консультация по управлению тревожностью. Рекомендован курс из 5 сессий.' },
+  { id: 'con-1', clientName: 'Клиент A', sessionId: 'ses-1', type: 'consultation', date: '2026-02-08T14:30:00', status: 'completed', text: 'Проведена консультация по трудовому договору.' },
+  { id: 'con-2', clientName: 'Клиент B', sessionId: 'ses-2', type: 'consultation', date: '2026-02-07T16:00:00', status: 'sent', text: 'Разъяснены права арендатора.' },
+  { id: 'con-3', clientName: 'Клиент C', sessionId: 'ses-3', type: 'general', date: '2026-02-06T10:30:00', status: 'draft', text: 'Черновик заключения по налогам.' },
+  { id: 'con-4', clientName: 'Клиент D', sessionId: 'ses-4', type: 'referral', date: '2026-02-05T12:00:00', status: 'completed', text: 'Направление к специалисту.' },
+  { id: 'con-5', clientName: 'Клиент E', sessionId: 'ses-5', type: 'consultation', date: '2026-02-04T17:00:00', status: 'completed', text: 'Консультация завершена.' },
 ];
 
 // ============================================

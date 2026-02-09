@@ -219,13 +219,13 @@ export const miniAppConfigs: Record<string, MiniAppConfig> = {
       { id: 'r4', condition: 'Если 3+ сообщения без решения → предложить запись', enabled: false, priority: 'low' },
     ],
     linkedExperts: [
-      { id: 'e1', name: 'Алексей Петров', avatar: 'АП', specialization: 'Семейное право', online: true },
-      { id: 'e2', name: 'Елена Новикова', avatar: 'ЕН', specialization: 'Трудовое право', online: false },
+      { id: 'e1', name: 'Эксперт 1', avatar: 'Э1', specialization: 'Семейное право', online: true },
+      { id: 'e2', name: 'Эксперт 2', avatar: 'Э2', specialization: 'Трудовое право', online: false },
     ],
     tenantSettings: [
-      { id: 'gpb', name: 'Газпромбанк', enabled: true, customPrompt: 'Ты — AI-юрист для клиентов Газпромбанка. Учитывай что клиенты могут спрашивать про банковские продукты. В таких случаях направляй в поддержку банка.', limit: 200, used: 87 },
-      { id: 'wb', name: 'Wildberries', enabled: true, customPrompt: null, limit: 100, used: 62 },
-      { id: 'mec', name: 'МЭЦ', enabled: true, customPrompt: null, limit: 50, used: 48 },
+      { id: 'tenant-a', name: 'Тенант A', enabled: true, customPrompt: 'Ты — AI-юрист. Учитывай специфику клиентов.', limit: 200, used: 87 },
+      { id: 'tenant-b', name: 'Тенант B', enabled: true, customPrompt: null, limit: 100, used: 62 },
+      { id: 'tenant-c', name: 'Тенант C', enabled: true, customPrompt: null, limit: 50, used: 48 },
       { id: 'dobro', name: 'Добросервис', enabled: true, customPrompt: null, limit: null, used: 234 },
     ],
     analytics: {
@@ -274,13 +274,13 @@ export const miniAppConfigs: Record<string, MiniAppConfig> = {
       { id: 'r3', condition: 'Если пользователь запросил рецепт → эскалация', enabled: true, priority: 'high' },
     ],
     linkedExperts: [
-      { id: 'e1', name: 'Мария Козлова', avatar: 'МК', specialization: 'Терапевт', online: true },
-      { id: 'e2', name: 'Андрей Смирнов', avatar: 'АС', specialization: 'Педиатр', online: true },
+      { id: 'e1', name: 'Эксперт 3', avatar: 'Э3', specialization: 'Терапевт', online: true },
+      { id: 'e2', name: 'Эксперт 4', avatar: 'Э4', specialization: 'Педиатр', online: true },
     ],
     tenantSettings: [
-      { id: 'gpb', name: 'Газпромбанк', enabled: true, customPrompt: null, limit: 150, used: 98 },
-      { id: 'wb', name: 'Wildberries', enabled: false, customPrompt: null, limit: 0, used: 0 },
-      { id: 'mec', name: 'МЭЦ', enabled: true, customPrompt: null, limit: 100, used: 67 },
+      { id: 'tenant-a', name: 'Тенант A', enabled: true, customPrompt: null, limit: 150, used: 98 },
+      { id: 'tenant-b', name: 'Тенант B', enabled: false, customPrompt: null, limit: 0, used: 0 },
+      { id: 'tenant-c', name: 'Тенант C', enabled: true, customPrompt: null, limit: 100, used: 67 },
       { id: 'dobro', name: 'Добросервис', enabled: true, customPrompt: null, limit: null, used: 189 },
     ],
     analytics: {
@@ -324,9 +324,9 @@ export const getDefaultConfig = (appId: string): MiniAppConfig => {
     escalationRules: [],
     linkedExperts: [],
     tenantSettings: [
-      { id: 'gpb', name: 'Газпромбанк', enabled: false, customPrompt: null, limit: 100, used: 0 },
-      { id: 'wb', name: 'Wildberries', enabled: false, customPrompt: null, limit: 100, used: 0 },
-      { id: 'mec', name: 'МЭЦ', enabled: false, customPrompt: null, limit: 50, used: 0 },
+      { id: 'tenant-a', name: 'Тенант A', enabled: false, customPrompt: null, limit: 100, used: 0 },
+      { id: 'tenant-b', name: 'Тенант B', enabled: false, customPrompt: null, limit: 100, used: 0 },
+      { id: 'tenant-c', name: 'Тенант C', enabled: false, customPrompt: null, limit: 50, used: 0 },
       { id: 'dobro', name: 'Добросервис', enabled: true, customPrompt: null, limit: null, used: 0 },
     ],
     analytics: {
