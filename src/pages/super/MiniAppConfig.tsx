@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Plus, Save } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -110,7 +111,7 @@ export default function MiniAppConfig() {
             <p className="text-sm text-muted-foreground">{app.description}</p>
           </div>
         </div>
-        <Button>
+        <Button onClick={() => toast.success('Настройки сохранены')}>
           <Save className="h-4 w-4 mr-2" />
           Сохранить
         </Button>
