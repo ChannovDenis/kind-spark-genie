@@ -1,180 +1,179 @@
 
 
-## Финальная полировка проекта перед демо
+## План: Живое демо — уведомления, эскалации, мета
 
 ### Обзор
-Исправление конкретных UX-проблем, выявленных в аудите. 5 задач выполняются последовательно.
+Добавление 3 улучшений для более живого демо:
+1. Колокольчик уведомлений в TopBar с выпадающим меню
+2. Секция "Входящие запросы" на дашборде эксперта
+3. Обновление title и favicon
 
 ---
 
-### Задача 1: Кнопка "Назад" на детальных страницах
+### Задача 1: Уведомления (Bell в TopBar)
 
-**Анализ текущего состояния:**
-
-| Страница | Кнопка "Назад" | Статус |
-|----------|---------------|--------|
-| `/quality/dialogs/:id` (DialogReview) | ✅ Есть (строка 115-119) | OK |
-| `/expert/session/:id` (Session) | ✅ Есть (строка 123-127) | OK |
-| `/studio/scenarios/:id` (ScenarioEditor) | ✅ Есть (строка 165) | OK |
-| `/studio/video/:id` (VideoAnalytics) | ✅ Есть (строка 74-77) | OK |
-
-**Результат:** Все детальные страницы уже имеют кнопку "Назад". Изменения не требуются.
-
----
-
-### Задача 2: Русская локаль в графиках
-
-**Анализ текущего состояния:**
-
-| Компонент | Файл | Текущий формат | Статус |
-|-----------|------|----------------|--------|
-| ActivityChart | `src/components/charts/ActivityChart.tsx` | `formatChartDate()` с date-fns/ru | ✅ OK |
-| BurndownChart | `src/components/charts/BurndownChart.tsx` | `formatChartDate()` с date-fns/ru | ✅ OK |
-| MRR AreaChart | `src/pages/super/Analytics.tsx` | Mock-данные уже на русском | ✅ OK |
-| BarChart активности | `src/pages/super/Analytics.tsx` | Mock-данные "2 фев", "3 фев" | ✅ OK |
-| AreaChart MiniApp | `src/pages/super/MiniAppConfig.tsx` | Использует `miniAppsData.ts` | ✅ OK |
-
-**Проверка mock-данных:**
-- `src/data/superData.ts` строки 325-332: даты уже русские ("2 фев", "3 фев" и т.д.)
-- `src/data/superData.ts` строки 341-348: месяцы уже русские ("Сен 2025", "Окт 2025" и т.д.)
-- `src/data/miniAppsData.ts`: использует `format(date, 'd MMM', { locale: ru })`
-
-**Результат:** Графики уже используют русскую локаль после предыдущих изменений. Изменения не требуются.
-
----
-
-### Задача 3: Разделитель тысяч
-
-**Анализ:** Большинство мест уже используют `.toLocaleString('ru-RU')`, но нужно проверить и унифицировать.
-
-**Файлы с потенциальными проблемами:**
-
-| Файл | Строка | Текущее | Требуется |
-|------|--------|---------|-----------|
-| `src/pages/admin/Branding.tsx` | — | Нет чисел >= 1000 | OK |
-| `src/pages/super/Pricing.tsx` | 124 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/super/Analytics.tsx` | 47-49 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/super/TenantDetail.tsx` | 151-154 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/super/MiniAppConfig.tsx` | 433 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/studio/Feed.tsx` | 184, 187 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/super/Experts.tsx` | 140 | `.toLocaleString('ru-RU')` | ✅ OK |
-| `src/pages/super/Campaigns.tsx` | 173-174 | `.toLocaleString('ru-RU')` | ✅ OK |
-
-**Результат:** Все числа >= 1000 уже используют разделитель тысяч. Изменения не требуются.
-
----
-
-### Задача 4: Toast-уведомления при сохранении
-
-**Анализ текущего состояния:**
-
-| Страница | Кнопка | Toast | Статус |
-|----------|--------|-------|--------|
-| `/super/tenants/:id` | "Сохранить" | ✅ `toast.success('Настройки тенанта сохранены')` | OK |
-| `/super/pricing` | "Сохранить тариф" | ✅ `toast.success('Тариф "..." сохранён')` | OK |
-| `/super/mini-apps/:id/config` | "Сохранить" | ❌ Нет toast | **Требуется** |
-| `/super/campaigns/new` | "Запустить кампанию" | ✅ `toast.success('Кампания запущена!')` | OK |
-| `/super/campaigns/new` | "Сохранить черновик" | ✅ `toast.success('Черновик сохранён')` | OK |
-| `/studio/scenarios/:id` | "Сгенерировать видео" | ✅ `toast.success('Видео сгенерировано!')` | OK |
-| `/studio/scenarios/:id` | "Сохранить черновик" | ✅ `toast.success('Черновик сохранён')` | OK |
-| `/admin/branding` | "Сохранить изменения" | ❌ Нет toast | **Требуется** |
-| `/admin/reports` | "Сформировать" | ❌ Нет toast | **Требуется** |
+**Файл:** `src/components/layout/TopBar.tsx`
 
 **Изменения:**
+- Добавить импорт `Bell, AlertTriangle, UserPlus, CheckCircle, Calendar, TrendingUp, CreditCard, FileCheck` из lucide-react
+- Добавить импорт `DropdownMenu, DropdownMenuTrigger, DropdownMenuContent` из UI
+- Добавить импорт `ScrollArea` и `toast`
+- Добавить состояние `notifications` с 7 mock-уведомлениями
+- Рядом с `TenantSelector` добавить DropdownMenu:
+  - Триггер: кнопка с иконкой Bell + красный бейдж "5" (absolute, -top-1, -right-1)
+  - Контент: ширина 380px, max-height 400px
+  - Заголовок: "Уведомления" + кнопка "Прочитать все"
+  - ScrollArea со списком уведомлений
+  - Каждое уведомление: иконка (цветная) + текст + timestamp
+  - Непрочитанные: bg-primary/5, точка слева
+  - Клик → toast "Перенаправление..."
 
-#### Файл: `src/pages/super/MiniAppConfig.tsx`
-- Добавить импорт `toast` из sonner (если нет)
-- Добавить обработчик `handleSave` с `toast.success('Настройки сохранены')`
-- Привязать к кнопке "Сохранить"
+**Mock-данные уведомлений:**
+```typescript
+const notifications = [
+  { id: 1, icon: AlertTriangle, color: 'text-destructive', text: 'Критичная ошибка в диалоге #847 — галлюцинация', time: '5 мин назад', unread: true },
+  { id: 2, icon: UserPlus, color: 'text-warning', text: 'Новая эскалация: клиент запросил юриста', time: '12 мин назад', unread: true },
+  { id: 3, icon: CheckCircle, color: 'text-success', text: "Видео 'Упражнения для спины' опубликовано", time: '30 мин назад', unread: true },
+  { id: 4, icon: Calendar, color: 'text-primary', text: 'Консультация с Д. Ивановым через 15 мин', time: '45 мин назад', unread: true },
+  { id: 5, icon: TrendingUp, color: 'text-warning', text: "Тренд: 'Налоговый вычет' — рекомендуем ролик", time: '1 час назад', unread: true },
+  { id: 6, icon: CreditCard, color: 'text-success', text: 'Газпромбанк: квота AI-обращений 80%', time: '2 часа назад', unread: false },
+  { id: 7, icon: FileCheck, color: 'text-primary', text: 'Отчёт за январь готов к скачиванию', time: 'вчера', unread: false },
+];
+```
 
-#### Файл: `src/pages/admin/Branding.tsx`
+---
+
+### Задача 2: Очередь эскалаций на дашборде эксперта
+
+**Файл:** `src/pages/expert/Dashboard.tsx`
+
+**Изменения:**
+- Добавить импорт `AlertTriangle, Users` из lucide-react
+- Добавить импорт `useNavigate` из react-router-dom
 - Добавить импорт `toast` из sonner
-- Добавить обработчик `handleSave` с `toast.success('Изменения сохранены')`
-- Привязать к кнопке "Сохранить изменения"
+- Добавить импорт `Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter` для делегирования
+- Добавить импорт `Select, SelectTrigger, SelectValue, SelectContent, SelectItem`
+- Добавить состояния:
+  - `escalations` — 3 карточки
+  - `visibleEscalations` — для скрытия отклонённых
+  - `delegateDialogOpen` + `selectedEscalation`
+- Добавить секцию "Входящие запросы" ПЕРЕД "Ближайшие консультации":
+  - Заголовок + бейдж "3 новых" красный
+  - 3 карточки glass-card с border-left:
+    - Карточка 1: border-destructive, bg-destructive/5, "СРОЧНО", confidence 0.12 красный
+    - Карточка 2: border-warning, confidence 0.38 жёлтый  
+    - Карточка 3: border-primary, confidence 0.71 зелёный
+  - Кнопки: "Принять" → navigate + toast, "Отклонить" → скрыть + toast, "Делегировать" → Dialog
 
-#### Файл: `src/pages/admin/Reports.tsx`
-- Добавить `toast.success('Отчёт формируется...')` в кнопку "Сформировать" в диалоге
+**Mock-данные эскалаций:**
+```typescript
+const escalationsData = [
+  { 
+    id: 1, 
+    urgent: true, 
+    time: '2 мин назад',
+    text: 'Клиент спрашивает про уголовное дело — AI отказал, клиент настаивает',
+    service: 'Юрист', 
+    tenant: 'ГПБ', 
+    confidence: 0.12,
+    borderColor: 'border-l-destructive',
+    bgColor: 'bg-destructive/5'
+  },
+  { 
+    id: 2, 
+    urgent: false, 
+    time: '8 мин назад',
+    text: 'Вопрос по разделу ипотечной квартиры — AI ответил, клиент не удовлетворён',
+    service: 'Юрист', 
+    tenant: 'ГПБ', 
+    confidence: 0.38,
+    borderColor: 'border-l-warning',
+    bgColor: ''
+  },
+  { 
+    id: 3, 
+    urgent: false, 
+    time: '23 мин назад',
+    text: 'Запрос на консультацию по трудовому спору — клиент хочет живого юриста',
+    service: 'Юрист', 
+    tenant: 'WB', 
+    confidence: 0.71,
+    borderColor: 'border-l-primary',
+    bgColor: ''
+  },
+];
+```
+
+**Диалог делегирования:**
+- Select с 3 экспертами: "Мария Иванова (Юрист)", "Дмитрий Козлов (Юрист)", "Елена Петрова (Юрист)"
+- Кнопка "Делегировать" → toast.success
 
 ---
 
-### Задача 5: Поиск — подключить фильтрацию
+### Задача 3: Favicon и мета
 
-**Анализ текущего состояния:**
+**Файл:** `index.html`
 
-| Страница | Поиск | Фильтрация | Статус |
-|----------|-------|------------|--------|
-| `/studio/scenarios` | ✅ Есть | ✅ Работает (строки 49-55) | OK |
-| `/studio/feed` | ✅ Есть | ✅ Работает (строки 70-76) | OK |
-| `/super/experts` | ✅ Есть | ✅ Работает (строки 44-48) | OK |
-| `/super/campaigns` | ❌ Нет поиска | — | Опционально |
-| `/admin/reports` | ❌ Нет поиска | — | Опционально |
-| `/expert/sessions` | ❌ Нет поиска | — | Опционально |
-| `/expert/conclusions` | ✅ Есть | ✅ Работает (строки 30-42) | OK |
-
-**Результат:** Все страницы с полем поиска уже имеют работающую фильтрацию. Изменения не требуются.
+**Изменения:**
+- Заменить `<title>` на "Добросервис 2.0"
+- Добавить emoji-favicon через data URI:
+```html
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+```
+- Обновить og:title на "Добросервис 2.0"
+- Обновить description на "AI-платформа для экспертных консультаций"
 
 ---
 
-### Итоговый список изменений
+### Итоговый список файлов
 
 | # | Файл | Изменение |
 |---|------|-----------|
-| 1 | `src/pages/super/MiniAppConfig.tsx` | Добавить toast при нажатии "Сохранить" |
-| 2 | `src/pages/admin/Branding.tsx` | Добавить toast при нажатии "Сохранить изменения" |
-| 3 | `src/pages/admin/Reports.tsx` | Добавить toast при нажатии "Сформировать" |
+| 1 | `src/components/layout/TopBar.tsx` | Добавить Bell с DropdownMenu уведомлений |
+| 2 | `src/pages/expert/Dashboard.tsx` | Добавить секцию "Входящие запросы" с 3 карточками |
+| 3 | `index.html` | Обновить title, favicon, мета-теги |
 
 ---
 
-### Технические детали
+### Визуальная структура уведомлений
 
-#### 1. MiniAppConfig.tsx
-```typescript
-// Добавить импорт
-import { toast } from 'sonner';
-
-// Добавить обработчик
-const handleSave = () => {
-  toast.success('Настройки сохранены');
-};
-
-// Изменить кнопку (строка ~116)
-<Button onClick={handleSave}>
-  <Save className="h-4 w-4 mr-2" />
-  Сохранить
-</Button>
-```
-
-#### 2. Branding.tsx
-```typescript
-// Добавить импорт
-import { toast } from 'sonner';
-
-// Добавить обработчик
-const handleSave = () => {
-  toast.success('Изменения сохранены');
-};
-
-// Изменить кнопку (строка ~30)
-<Button onClick={handleSave}>Сохранить изменения</Button>
-```
-
-#### 3. Reports.tsx
-```typescript
-// Изменить кнопку в DialogFooter (строка ~217-218)
-<Button onClick={() => {
-  toast.success('Отчёт формируется...');
-  setIsCreateOpen(false);
-}}>
-  Сформировать
-</Button>
+```text
+┌─────────────────────────────────────┐
+│ Уведомления          [Прочитать все]│
+├─────────────────────────────────────┤
+│ ● ⚠️ Критичная ошибка...   5 мин   │ ← bg-primary/5
+│ ● 👤 Новая эскалация...   12 мин   │ ← bg-primary/5
+│ ● ✓ Видео опубликовано    30 мин   │ ← bg-primary/5
+│ ● 📅 Консультация через   45 мин   │ ← bg-primary/5
+│ ● 📈 Тренд: Налоговый...  1 час    │ ← bg-primary/5
+│   💳 Газпромбанк: квота   2 часа   │
+│   📄 Отчёт за январь      вчера    │
+└─────────────────────────────────────┘
 ```
 
 ---
 
-### Что не требует изменений (уже реализовано)
+### Визуальная структура эскалаций
 
-1. **Кнопки "Назад"** — все детальные страницы уже имеют навигацию
-2. **Русская локаль в графиках** — реализовано через `formatChartDate()` и date-fns
-3. **Разделитель тысяч** — везде используется `.toLocaleString('ru-RU')`
-4. **Фильтрация поиска** — все поля поиска уже фильтруют данные
+```text
+Входящие запросы                [3 новых]
+┌──────────────────────────────────────────┐
+│▌ [СРОЧНО]                    2 мин назад │ ← border-l-destructive, bg-destructive/5
+│▌ Клиент спрашивает про уголовное дело... │
+│▌ 🏷️ Юрист  🏢 ГПБ   📊 0.12             │
+│▌ [Принять] [Отклонить] [Делегировать]    │
+└──────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│▌                             8 мин назад │ ← border-l-warning
+│▌ Вопрос по разделу ипотечной квартиры... │
+│▌ 🏷️ Юрист  🏢 ГПБ   📊 0.38             │
+│▌ [Принять] [Отклонить] [Делегировать]    │
+└──────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│▌                            23 мин назад │ ← border-l-primary
+│▌ Запрос на консультацию по трудовому...  │
+│▌ 🏷️ Юрист  🏢 WB    📊 0.71             │
+│▌ [Принять] [Отклонить] [Делегировать]    │
+└──────────────────────────────────────────┘
+```
 
