@@ -44,7 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (profileError) {
-        console.error('Error fetching profile:', profileError);
+        // Log only in development mode
+        if (import.meta.env.DEV) {
+          console.error('Error fetching profile:', profileError);
+        }
       } else {
         setProfile(profileData as UserProfile);
       }
@@ -54,12 +57,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .rpc('get_user_role', { _user_id: userId });
 
       if (roleError) {
-        console.error('Error fetching role:', roleError);
+        // Log only in development mode
+        if (import.meta.env.DEV) {
+          console.error('Error fetching role:', roleError);
+        }
       } else {
         setRole(roleData as AppRole);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      // Log only in development mode
+      if (import.meta.env.DEV) {
+        console.error('Error fetching user data:', error);
+      }
     }
   };
 
@@ -106,7 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     
     if (error) {
-      console.error('Sign in error:', error);
+      // Log only in development mode
+      if (import.meta.env.DEV) {
+        console.error('Sign in error:', error);
+      }
       return { error };
     }
     
@@ -128,7 +140,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     
     if (error) {
-      console.error('Sign up error:', error);
+      // Log only in development mode
+      if (import.meta.env.DEV) {
+        console.error('Sign up error:', error);
+      }
       return { error };
     }
     
