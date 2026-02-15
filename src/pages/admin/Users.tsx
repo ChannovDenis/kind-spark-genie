@@ -3,7 +3,9 @@ import { Search, Filter, UserPlus, MoreHorizontal, Mail, Phone } from 'lucide-re
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { mockUsers, PartnerUser } from '@/data/mockData';
+import { PartnerUser } from '@/data/mockData';
+import { tenantUsers } from '@/data/tenantMetrics';
+import { useTenant } from '@/contexts/TenantContext';
 import { formatRelativeDate } from '@/lib/formatters';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -21,10 +23,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export default function AdminUsers() {
+  const { currentTenant } = useTenant();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<PartnerUser | null>(null);
 
-  const filteredUsers = mockUsers.filter(user =>
+  const users = tenantUsers[currentTenant.id] || tenantUsers.dobroservice;
+
+  const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.department.toLowerCase().includes(searchQuery.toLowerCase())

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Download, FileText, Table, FileSpreadsheet, Calendar, Filter } from 'lucide-react';
+import { Plus, Download, FileText, Table, FileSpreadsheet, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -36,9 +36,48 @@ const typeLabels: Record<Report['type'], string> = {
   users: 'Пользователи',
 };
 
+function downloadCSV(report: Report) {
+  const csvContent =
+    'Дата,Сервис,AI-обращений,Эскалаций,CSAT\n' +
+    '2026-01-15,Юрист,245,18,82%\n' +
+    '2026-01-15,Психолог,189,12,91%\n' +
+    '2026-01-15,Финансист,134,8,87%\n' +
+    '2026-01-15,Врач,167,11,89%\n' +
+    '2026-01-16,Юрист,258,20,81%\n' +
+    '2026-01-16,Психолог,195,14,90%\n' +
+    '2026-01-16,Финансист,142,9,86%\n' +
+    '2026-01-16,Врач,171,12,88%\n' +
+    '2026-01-17,Юрист,231,16,83%\n' +
+    '2026-01-17,Психолог,178,10,92%\n' +
+    '2026-01-17,Финансист,128,7,88%\n' +
+    '2026-01-17,Врач,159,10,90%\n' +
+    '2026-01-18,Юрист,267,22,80%\n' +
+    '2026-01-18,Психолог,201,15,89%\n' +
+    '2026-01-18,Финансист,148,10,85%\n' +
+    '2026-01-18,Врач,183,13,87%\n' +
+    '2026-01-19,Юрист,112,6,84%\n' +
+    '2026-01-19,Психолог,89,4,93%\n' +
+    '2026-01-19,Финансист,56,3,90%\n' +
+    '2026-01-19,Врач,78,5,91%\n';
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${report.name.replace(/\s+/g, '_')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast.success('Отчёт скачан');
+}
+
 export default function AdminReports() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [reports, setReports] = useState<Report[]>(mockReports);
   const [selectedServices, setSelectedServices] = useState<string[]>(['all']);
+  const [newReportType, setNewReportType] = useState<Report['type']>('usage');
+  const [newReportFormat, setNewReportFormat] = useState<Report['format']>('pdf');
 
   const toggleService = (service: string) => {
     if (service === 'all') {
@@ -51,6 +90,29 @@ export default function AdminReports() {
         setSelectedServices([...newServices, service]);
       }
     }
+  };
+
+  const handleCreateReport = () => {
+    const newId = `rep-gen-${Date.now()}`;
+    const newReport: Report = {
+      id: newId,
+      name: `${typeLabels[newReportType]} — ${new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}`,
+      type: newReportType,
+      createdAt: new Date().toISOString(),
+      format: newReportFormat,
+      size: '—',
+      status: 'generating',
+    };
+    setReports(prev => [newReport, ...prev]);
+    setIsCreateOpen(false);
+
+    setTimeout(() => {
+      setReports(prev =>
+        prev.map(r =>
+          r.id === newId ? { ...r, status: 'ready', size: '1.2 МБ' } : r
+        )
+      );
+    }, 2000);
   };
 
   return (
@@ -100,12 +162,18 @@ export default function AdminReports() {
             </tr>
           </thead>
           <tbody>
-            {mockReports.map((report) => (
+            {reports.map((report) => (
               <tr key={report.id}>
                 <td>
                   <div className="flex items-center gap-3">
-                    {typeIcons[report.type]}
-                    <span className="font-medium">{report.name}</span>
+                    {report.status === 'generating' ? (
+                      <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
+                    ) : (
+                      typeIcons[report.type]
+                    )}
+                    <span className={`font-medium ${report.status === 'generating' ? 'text-muted-foreground' : ''}`}>
+                      {report.status === 'generating' ? 'Формируется...' : report.name}
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -123,9 +191,16 @@ export default function AdminReports() {
                 </td>
                 <td className="text-muted-foreground">{report.size}</td>
                 <td>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Download className="h-4 w-4" />
-                  </Button>
+                  {report.status !== 'generating' && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => downloadCSV(report)}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -143,7 +218,7 @@ export default function AdminReports() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Тип отчёта</Label>
-              <Select defaultValue="usage">
+              <Select value={newReportType} onValueChange={(v) => setNewReportType(v as Report['type'])}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -198,7 +273,7 @@ export default function AdminReports() {
 
             <div className="space-y-2">
               <Label>Формат</Label>
-              <Select defaultValue="pdf">
+              <Select value={newReportFormat} onValueChange={(v) => setNewReportFormat(v as Report['format'])}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -215,10 +290,7 @@ export default function AdminReports() {
             <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
               Отмена
             </Button>
-            <Button onClick={() => {
-              toast.success('Отчёт формируется...');
-              setIsCreateOpen(false);
-            }}>
+            <Button onClick={handleCreateReport}>
               Сформировать
             </Button>
           </DialogFooter>
