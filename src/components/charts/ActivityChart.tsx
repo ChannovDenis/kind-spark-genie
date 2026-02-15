@@ -8,19 +8,19 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { activityChartData } from '@/data/mockData';
-import { formatChartDate } from '@/lib/formatters';
+import { activityChartData } from '@/data/tenantMetrics';
 
-export function ActivityChart() {
-  const formattedData = activityChartData.map(item => ({
-    ...item,
-    dateLabel: formatChartDate(item.date),
-  }));
+interface ActivityChartProps {
+  tenantId: string;
+}
+
+export function ActivityChart({ tenantId }: ActivityChartProps) {
+  const data = activityChartData[tenantId] || activityChartData.dobroservice;
 
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={formattedData}>
+        <AreaChart data={data}>
           <defs>
             <linearGradient id="colorAi" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0.3} />
@@ -37,7 +37,7 @@ export function ActivityChart() {
             vertical={false}
           />
           <XAxis 
-            dataKey="dateLabel" 
+            dataKey="date" 
             tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
             axisLine={{ stroke: 'hsl(217, 33%, 25%)' }}
             tickLine={false}

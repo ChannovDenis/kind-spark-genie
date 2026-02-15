@@ -1,11 +1,17 @@
-import { serviceUsage } from '@/data/mockData';
+import { tenantServiceUsage } from '@/data/tenantMetrics';
 import { formatNumber } from '@/lib/formatters';
 import { Progress } from '@/components/ui/progress';
 
-export function ServiceUsageTable() {
+interface ServiceUsageTableProps {
+  tenantId: string;
+}
+
+export function ServiceUsageTable({ tenantId }: ServiceUsageTableProps) {
+  const items = tenantServiceUsage[tenantId] || tenantServiceUsage.dobroservice;
+
   return (
     <div className="space-y-4">
-      {serviceUsage.map((item) => {
+      {items.map((item) => {
         const percentage = (item.requests / item.quota) * 100;
         const isOverQuota = percentage > 80;
         

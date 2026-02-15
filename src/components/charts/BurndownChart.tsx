@@ -7,44 +7,26 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { formatChartDate } from '@/lib/formatters';
+import { burndownData } from '@/data/tenantMetrics';
 
-// Генерируем данные для burn-down графика
-const generateBurndownData = () => {
-  const data = [];
-  const totalBudget = 15000;
-  let remaining = totalBudget;
-  
-  for (let day = 1; day <= 28; day++) {
-    const planned = totalBudget - (totalBudget / 28) * day;
-    const dailyUsage = Math.floor(Math.random() * 200) + 400;
-    remaining = Math.max(0, remaining - dailyUsage);
-    
-    const date = new Date(2026, 1, day); // Февраль 2026
-    data.push({
-      day: formatChartDate(date),
-      planned: Math.round(planned),
-      actual: remaining,
-    });
-  }
-  
-  return data;
-};
+interface BurndownChartProps {
+  tenantId?: string;
+}
 
-const burndownData = generateBurndownData();
+export function BurndownChart({ tenantId = 'dobroservice' }: BurndownChartProps) {
+  const data = burndownData[tenantId] || burndownData.dobroservice;
 
-export function BurndownChart() {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={burndownData}>
+        <LineChart data={data}>
           <CartesianGrid 
             strokeDasharray="3 3" 
             stroke="hsl(217, 33%, 25%)" 
             vertical={false}
           />
           <XAxis 
-            dataKey="day" 
+            dataKey="date" 
             tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 12 }}
             axisLine={{ stroke: 'hsl(217, 33%, 25%)' }}
             tickLine={false}
@@ -67,12 +49,12 @@ export function BurndownChart() {
             labelStyle={{ color: 'hsl(210, 40%, 98%)' }}
             formatter={(value: number, name: string) => [
               value.toLocaleString('ru-RU'),
-              name === 'planned' ? 'План' : 'Факт'
+              name === 'plan' ? 'План' : 'Факт'
             ]}
           />
           <Line
             type="monotone"
-            dataKey="planned"
+            dataKey="plan"
             stroke="hsl(215, 20%, 65%)"
             strokeWidth={2}
             strokeDasharray="5 5"
@@ -80,7 +62,7 @@ export function BurndownChart() {
           />
           <Line
             type="monotone"
-            dataKey="actual"
+            dataKey="fact"
             stroke="hsl(217, 91%, 60%)"
             strokeWidth={2}
             dot={false}

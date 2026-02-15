@@ -2,16 +2,20 @@ import { useState } from 'react';
 import { Download, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
-import { billingQuotas } from '@/data/mockData';
+import { tenantBillingQuotas } from '@/data/tenantMetrics';
 import { formatNumber } from '@/lib/formatters';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { BurndownChart } from '@/components/charts/BurndownChart';
+import { useTenant } from '@/contexts/TenantContext';
 
 export default function AdminBilling() {
+  const { currentTenant } = useTenant();
   const [autoExtend, setAutoExtend] = useState(true);
   const [notifications, setNotifications] = useState(true);
+
+  const billingQuotas = tenantBillingQuotas[currentTenant.id] || tenantBillingQuotas.dobroservice;
 
   return (
     <div className="space-y-6">
@@ -41,7 +45,7 @@ export default function AdminBilling() {
             </div>
           </div>
         </div>
-        <BurndownChart />
+        <BurndownChart tenantId={currentTenant.id} />
       </div>
 
       {/* Quotas Grid */}

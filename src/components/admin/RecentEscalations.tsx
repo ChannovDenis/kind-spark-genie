@@ -1,15 +1,22 @@
-import { mockEscalations, services } from '@/data/mockData';
+import { tenantEscalations } from '@/data/tenantMetrics';
+import { services } from '@/data/mockData';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatRelativeDate } from '@/lib/formatters';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-export function RecentEscalations() {
+interface RecentEscalationsProps {
+  tenantId: string;
+}
+
+export function RecentEscalations({ tenantId }: RecentEscalationsProps) {
+  const escalations = tenantEscalations[tenantId] || tenantEscalations.dobroservice;
+
   const getServiceInfo = (serviceId: string) => 
     services.find(s => s.id === serviceId) || { name: serviceId, icon: '📋' };
 
   return (
     <div className="space-y-3">
-      {mockEscalations.slice(0, 5).map((escalation) => {
+      {escalations.map((escalation) => {
         const service = getServiceInfo(escalation.service);
         const initials = escalation.userName
           .split(' ')
