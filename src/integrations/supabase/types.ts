@@ -193,6 +193,63 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_items: {
+        Row: {
+          id: string
+          tenant_id: string | null
+          title: string
+          description: string | null
+          image_url: string | null
+          video_url: string | null
+          tags: string[] | null
+          author_name: string | null
+          author_avatar: string | null
+          type: string | null
+          target_service: string | null
+          target_prompt: string | null
+          is_published: boolean | null
+          published_at: string | null
+          sort_order: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          tenant_id?: string | null
+          title: string
+          description?: string | null
+          image_url?: string | null
+          video_url?: string | null
+          tags?: string[] | null
+          author_name?: string | null
+          author_avatar?: string | null
+          type?: string | null
+          target_service?: string | null
+          target_prompt?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          sort_order?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          tenant_id?: string | null
+          title?: string
+          description?: string | null
+          image_url?: string | null
+          video_url?: string | null
+          tags?: string[] | null
+          author_name?: string | null
+          author_avatar?: string | null
+          type?: string | null
+          target_service?: string | null
+          target_prompt?: string | null
+          is_published?: boolean | null
+          published_at?: string | null
+          sort_order?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

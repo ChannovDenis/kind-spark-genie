@@ -10,12 +10,12 @@ export function useStudioVideos() {
     queryKey: ['studio-videos'],
     queryFn: async (): Promise<Video[]> => {
       const { data, error } = await supabase
-        .from('videos' as any)
+        .from('videos')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return (data ?? []) as unknown as Video[];
+      return (data ?? []) as Video[];
     },
   });
 }
@@ -26,7 +26,7 @@ export function useDeleteStudioVideo() {
   return useMutation({
     mutationFn: async (videoId: string): Promise<void> => {
       const { error } = await supabase
-        .from('videos' as any)
+        .from('videos')
         .delete()
         .eq('id', videoId);
 
@@ -81,12 +81,12 @@ export function useStudioFeedItems() {
     queryKey: ['studio-feed-items'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('feed_items' as any)
+        .from('feed_items')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return (data ?? []) as any[];
+      return data ?? [];
     },
   });
 }
