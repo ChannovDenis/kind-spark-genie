@@ -28,7 +28,21 @@ export default function ExpertSessions() {
   });
 
   const handleExport = () => {
-    toast.success('Экспорт начат. Файл будет загружен автоматически.');
+    const header = 'Дата,Время,Клиент,Тема,Длительность (мин),Рейтинг,Статус\n';
+    const rows = filteredSessions.map(s => {
+      const d = new Date(s.date);
+      return `${format(d, 'dd.MM.yyyy')},${format(d, 'HH:mm')},${s.clientName},${s.topic},${s.duration},${s.rating || ''},${statusConfig[s.status].label}`;
+    }).join('\n');
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sessions_export.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Файл sessions_export.csv скачан');
   };
 
   return (

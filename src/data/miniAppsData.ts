@@ -181,7 +181,7 @@ const generateDailyData = () => {
     date.setDate(date.getDate() - i);
     data.push({
       date: format(date, 'd MMM', { locale: ru }),
-      requests: Math.floor(Math.random() * 40) + 40,
+      requests: 40 + ((i * 7 + 13) % 40),
     });
   }
   return data;

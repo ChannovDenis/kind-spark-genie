@@ -42,7 +42,20 @@ export default function ExpertConclusions() {
   });
 
   const handleExport = () => {
-    toast.success('Экспорт начат. Файл будет загружен автоматически.');
+    const header = 'Клиент,Тип,Дата,Статус,Текст\n';
+    const rows = filteredConclusions.map(c =>
+      `${c.clientName},${typeLabels[c.type]},${format(new Date(c.date), 'dd.MM.yyyy')},${statusConfig[c.status].label},"${c.text.replace(/"/g, '""')}"`
+    ).join('\n');
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'conclusions_export.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Файл conclusions_export.csv скачан');
   };
 
   return (

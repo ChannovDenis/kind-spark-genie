@@ -56,7 +56,20 @@ export default function Earnings() {
   const averageAmount = Math.round(totalAmount / consultationsCount);
 
   const handleExport = () => {
-    toast.success('Отчёт выгружен');
+    const header = 'Дата,Клиент,Сервис,Длительность (мин),Сумма (₽),Статус\n';
+    const rows = mockEarnings.map(r =>
+      `${r.date},${r.client},${r.service},${r.duration},${r.amount},${statusConfig[r.status].label}`
+    ).join('\n');
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'earnings_export.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Файл earnings_export.csv скачан');
   };
 
   return (

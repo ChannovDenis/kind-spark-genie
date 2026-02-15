@@ -260,7 +260,7 @@ const generateRetentionCurve = (hookRate: number, duration: number): RetentionPo
       retention = retention - (hookRate - 60) / 7 * (t - 3) / 7;
       points.push({ time: t, retention: Math.round(Math.max(retention, 40)) });
     } else {
-      retention = retention - Math.random() * 3;
+      retention = retention - ((t * 7 + 3) % 3);
       points.push({ time: t, retention: Math.round(Math.max(retention, 25)) });
     }
   }
