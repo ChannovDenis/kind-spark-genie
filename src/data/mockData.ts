@@ -157,34 +157,6 @@ export const mockUsers: PartnerUser[] = [
   },
 ];
 
-// Данные графика активности (30 дней)
-export const activityChartData = Array.from({ length: 30 }, (_, i) => {
-  const date = new Date('2026-02-08');
-  date.setDate(date.getDate() - (29 - i));
-  return {
-    date: date.toISOString().split('T')[0],
-    aiRequests: Math.floor(Math.random() * 500) + 200,
-    escalations: Math.floor(Math.random() * 30) + 5,
-  };
-});
-
-// Использование по сервисам
-export const serviceUsage = [
-  { service: 'Юрист', requests: 3420, quota: 5000, escalations: 145 },
-  { service: 'Врач', requests: 2890, quota: 4000, escalations: 98 },
-  { service: 'Психолог', requests: 1560, quota: 2000, escalations: 234 },
-  { service: 'Финансист', requests: 890, quota: 1500, escalations: 45 },
-  { service: 'Фитнес', requests: 2100, quota: 3000, escalations: 12 },
-  { service: 'Нутрициолог', requests: 780, quota: 1000, escalations: 28 },
-];
-
-// Биллинг: квоты
-export const billingQuotas = [
-  { service: 'AI-запросы', used: 11640, limit: 15000, unit: 'запросов' },
-  { service: 'Эскалации к экспертам', used: 562, limit: 1000, unit: 'сессий' },
-  { service: 'Хранилище документов', used: 4.2, limit: 10, unit: 'ГБ' },
-  { service: 'API вызовы', used: 45000, limit: 100000, unit: 'вызовов' },
-];
 
 // Отчёты
 export interface Report {
