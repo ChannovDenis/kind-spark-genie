@@ -33,7 +33,7 @@ const directions: Direction[] = [
   { id: 8, name: 'МСБ (AI-скиллы)', level: 'L0', target: 'L1', icon: Lightbulb, iteration: 'Iter3', group: 'mini-app' },
   { id: 9, name: 'Админка + КЦ 2.0', level: 'L1', target: 'L2', icon: Headphones, iteration: 'Iter1', group: 'management' },
   { id: 10, name: 'Контент-студия', level: 'L1', target: 'L2', icon: Video, iteration: 'Iter3', group: 'management' },
-  { id: 11, name: 'Дашборд проекта', level: 'L0', target: 'L1', icon: BarChart3, iteration: 'Iter1', group: 'management' },
+  { id: 11, name: 'Дашборд проекта', level: 'L1', target: 'L1', icon: BarChart3, iteration: 'Iter1', group: 'management' },
   { id: 12, name: 'Бэклог ЕЮС', level: 'L0', target: 'L1', icon: ListTodo, iteration: 'Iter4', group: 'management' },
 ];
 
@@ -56,9 +56,9 @@ interface IterationTask {
 
 const currentIterationTasks: IterationTask[] = [
   { name: 'HTTPS + субдомены (ждём DNS)', done: false },
-  { name: 'AI Chat — tenant system prompts', done: false },
-  { name: 'Feed scoring по тенанту', done: false },
-  { name: 'Admin code splitting', done: false },
+  { name: 'AI Chat — tenant system prompts', done: true },
+  { name: 'Feed scoring по тенанту', done: true },
+  { name: 'Admin code splitting', done: true },
   { name: 'Дашборд проекта ЕЮС', done: true },
 ];
 
@@ -101,9 +101,9 @@ function getOverallProgress(): number {
 export default function ProjectDashboard() {
   const daysLeft = getDaysUntilDemo();
   const progress = getOverallProgress();
-  const tasksCompleted = 47;
-  const aiHours = 10;
-  const manualHours = 336;
+  const tasksCompleted = 52;
+  const aiHours = 12;
+  const manualHours = 396;
   const speedup = Math.round(manualHours / aiHours);
   const savingsRub = Math.round((manualHours - aiHours) * 3500);
   const aiCostRub = 2000;
