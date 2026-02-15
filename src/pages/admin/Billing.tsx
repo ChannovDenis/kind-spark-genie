@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Download, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
-import { tenantBillingQuotas } from '@/data/tenantMetrics';
+import { tenantBillingQuotas, tenantTransactions } from '@/data/tenantMetrics';
 import { formatNumber } from '@/lib/formatters';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
@@ -14,8 +14,11 @@ export default function AdminBilling() {
   const { currentTenant } = useTenant();
   const [autoExtend, setAutoExtend] = useState(true);
   const [notifications, setNotifications] = useState(true);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
 
   const billingQuotas = tenantBillingQuotas[currentTenant.id] || tenantBillingQuotas.dobroservice;
+  const transactions = tenantTransactions[currentTenant.id] || tenantTransactions.dobroservice;
+  const visibleTransactions = showAllTransactions ? transactions : transactions.slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -46,6 +49,42 @@ export default function AdminBilling() {
           </div>
         </div>
         <BurndownChart tenantId={currentTenant.id} />
+      </div>
+
+      {/* Transaction History */}
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-semibold mb-4">История операций</h2>
+        <div className="overflow-hidden">
+          <table className="data-table">
+            <thead className="bg-muted/30">
+              <tr>
+                <th>Дата</th>
+                <th>Операция</th>
+                <th>Количество</th>
+                <th>Баланс</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibleTransactions.map((tx, i) => (
+                <tr key={i}>
+                  <td className="text-muted-foreground">{tx.date}</td>
+                  <td>{tx.operation}</td>
+                  <td className={tx.amount > 0 ? 'text-success font-medium' : 'text-destructive font-medium'}>
+                    {tx.amount > 0 ? `+${formatNumber(tx.amount)}` : formatNumber(tx.amount)}
+                  </td>
+                  <td className="font-medium">{formatNumber(tx.balance)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {!showAllTransactions && transactions.length > 10 && (
+          <div className="mt-4 text-center">
+            <Button variant="outline" onClick={() => setShowAllTransactions(true)}>
+              Показать ещё
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Quotas Grid */}

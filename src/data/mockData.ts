@@ -166,6 +166,7 @@ export interface Report {
   createdAt: string;
   format: 'pdf' | 'xlsx' | 'csv';
   size: string;
+  status?: 'ready' | 'generating';
 }
 
 export const mockReports: Report[] = [
@@ -176,6 +177,7 @@ export const mockReports: Report[] = [
     createdAt: '2026-02-01T10:00:00',
     format: 'pdf',
     size: '2.4 МБ',
+    status: 'ready',
   },
   {
     id: 'rep-2',
@@ -184,6 +186,7 @@ export const mockReports: Report[] = [
     createdAt: '2026-01-15T14:30:00',
     format: 'xlsx',
     size: '1.1 МБ',
+    status: 'ready',
   },
   {
     id: 'rep-3',
@@ -192,6 +195,52 @@ export const mockReports: Report[] = [
     createdAt: '2026-01-05T09:00:00',
     format: 'pdf',
     size: '3.8 МБ',
+    status: 'ready',
+  },
+  {
+    id: 'rep-4',
+    name: 'Использование AI-сервисов — Январь 2026',
+    type: 'usage',
+    createdAt: '2026-02-03T11:00:00',
+    format: 'pdf',
+    size: '2.1 МБ',
+    status: 'ready',
+  },
+  {
+    id: 'rep-5',
+    name: 'Биллинг — Январь 2026',
+    type: 'billing',
+    createdAt: '2026-02-02T09:30:00',
+    format: 'xlsx',
+    size: '856 КБ',
+    status: 'ready',
+  },
+  {
+    id: 'rep-6',
+    name: 'Качество обслуживания — Q4 2025',
+    type: 'quality',
+    createdAt: '2026-01-10T16:00:00',
+    format: 'pdf',
+    size: '3.4 МБ',
+    status: 'ready',
+  },
+  {
+    id: 'rep-7',
+    name: 'Активность пользователей — Январь 2026',
+    type: 'usage',
+    createdAt: '2026-02-04T08:45:00',
+    format: 'csv',
+    size: '124 КБ',
+    status: 'ready',
+  },
+  {
+    id: 'rep-8',
+    name: 'Эскалации — Январь 2026',
+    type: 'quality',
+    createdAt: '2026-02-05T14:15:00',
+    format: 'pdf',
+    size: '1.8 МБ',
+    status: 'ready',
   },
 ];
 

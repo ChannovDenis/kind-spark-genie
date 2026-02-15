@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Smartphone, Check } from 'lucide-react';
+import { Upload, Check, Bot } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ const colorPresets = [
 export default function AdminBranding() {
   const { currentTenant } = useTenant();
   const [accentColor, setAccentColor] = useState(currentTenant.accentColor);
+  const [appTitle, setAppTitle] = useState(`${currentTenant.name} Помощник`);
   const [isDragging, setIsDragging] = useState(false);
 
   return (
@@ -106,7 +107,8 @@ export default function AdminBranding() {
           <div className="glass-card p-6">
             <h2 className="text-lg font-semibold mb-4">Название приложения</h2>
             <Input 
-              defaultValue={`${currentTenant.name} Помощник`}
+              value={appTitle}
+              onChange={(e) => setAppTitle(e.target.value)}
               placeholder="Название для пользователей"
             />
             <p className="text-xs text-muted-foreground mt-2">
@@ -115,71 +117,77 @@ export default function AdminBranding() {
           </div>
         </div>
 
-        {/* Phone Preview */}
+        {/* 3-Screen Preview */}
         <div className="glass-card p-6">
           <h2 className="text-lg font-semibold mb-4">Предпросмотр</h2>
           
-          <div className="flex justify-center">
-            <div className="relative">
-              {/* Phone Frame */}
-              <div className="w-[280px] h-[580px] bg-black rounded-[40px] p-3 shadow-2xl">
-                <div className="w-full h-full bg-background rounded-[32px] overflow-hidden relative">
-                  {/* Status Bar */}
-                  <div className="h-12 flex items-center justify-center">
-                    <div className="w-24 h-6 bg-black rounded-full" />
-                  </div>
-                  
-                  {/* App Header */}
-                  <div 
-                    className="h-16 flex items-center px-4 gap-3"
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
-                      {currentTenant.logo}
-                    </div>
-                    <div className="text-white">
-                      <div className="font-semibold text-sm">{currentTenant.name}</div>
-                      <div className="text-xs opacity-80">AI Помощник</div>
-                    </div>
-                  </div>
+          <div className="flex gap-4 justify-center">
+            {/* Splash */}
+            <div className="text-center">
+              <div className="border border-border rounded-[2rem] aspect-[9/19] max-w-[120px] w-full overflow-hidden bg-background flex flex-col items-center justify-center p-3">
+                <Bot className="h-10 w-10 mb-2" style={{ color: accentColor }} />
+                <span className="text-[10px] font-semibold text-center leading-tight">{appTitle}</span>
+              </div>
+              <span className="text-xs text-muted-foreground mt-2 block">Splash</span>
+            </div>
 
-                  {/* Chat Area */}
-                  <div className="p-4 space-y-3">
-                    <div className="flex gap-2">
-                      <div 
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs"
-                        style={{ backgroundColor: accentColor }}
-                      >
-                        AI
-                      </div>
-                      <div className="bg-muted rounded-2xl rounded-tl-none p-3 max-w-[180px]">
-                        <p className="text-xs">Здравствуйте! Чем могу помочь?</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2 justify-end">
-                      <div 
-                        className="rounded-2xl rounded-tr-none p-3 max-w-[180px] text-white"
-                        style={{ backgroundColor: accentColor }}
-                      >
-                        <p className="text-xs">Вопрос по трудовому договору</p>
-                      </div>
+            {/* Feed */}
+            <div className="text-center">
+              <div className="border border-border rounded-[2rem] aspect-[9/19] max-w-[120px] w-full overflow-hidden bg-background flex flex-col">
+                {/* Header */}
+                <div className="h-8 flex items-center px-3 gap-1.5 shrink-0 text-white" style={{ backgroundColor: accentColor }}>
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[6px]">
+                    {currentTenant.logo}
+                  </div>
+                  <span className="text-[7px] font-semibold truncate">{currentTenant.name}</span>
+                </div>
+                {/* Cards */}
+                <div className="p-2 space-y-1.5 flex-1">
+                  <div className="rounded-lg bg-muted h-12" />
+                  <div className="rounded-lg bg-muted h-12" />
+                  <div className="rounded-lg bg-muted/50 h-8" />
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground mt-2 block">Лента</span>
+            </div>
+
+            {/* Chat */}
+            <div className="text-center">
+              <div className="border border-border rounded-[2rem] aspect-[9/19] max-w-[120px] w-full overflow-hidden bg-background flex flex-col">
+                {/* Header */}
+                <div className="h-8 flex items-center px-3 gap-1.5 shrink-0 text-white" style={{ backgroundColor: accentColor }}>
+                  <Bot className="h-3 w-3" />
+                  <span className="text-[7px] font-semibold">AI Помощник</span>
+                </div>
+                {/* Messages */}
+                <div className="p-2 space-y-1.5 flex-1">
+                  {/* Assistant */}
+                  <div className="flex gap-1">
+                    <div 
+                      className="rounded-lg rounded-tl-none p-1.5 max-w-[80px]"
+                      style={{ backgroundColor: accentColor + '1A' }}
+                    >
+                      <p className="text-[6px]">Здравствуйте! Чем могу помочь?</p>
                     </div>
                   </div>
-
-                  {/* Input */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-muted rounded-full h-10 flex items-center px-4">
-                      <span className="text-xs text-muted-foreground">Введите сообщение...</span>
+                  {/* User */}
+                  <div className="flex justify-end">
+                    <div 
+                      className="rounded-lg rounded-tr-none p-1.5 max-w-[80px] text-white"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      <p className="text-[6px]">Вопрос по договору</p>
                     </div>
                   </div>
                 </div>
+                {/* Input */}
+                <div className="px-2 pb-2 shrink-0">
+                  <div className="bg-muted rounded-full h-5 flex items-center px-2">
+                    <span className="text-[5px] text-muted-foreground">Сообщение...</span>
+                  </div>
+                </div>
               </div>
-              
-              {/* Phone Icon */}
-              <Smartphone 
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 h-6 w-6 text-muted-foreground" 
-              />
+              <span className="text-xs text-muted-foreground mt-2 block">Чат</span>
             </div>
           </div>
         </div>
