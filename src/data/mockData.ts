@@ -86,7 +86,7 @@ export const mockEscalations: Escalation[] = [
   },
 ];
 
-// Пользователи партнёра
+// Пользователи партнёра (данные перенесены в tenantMetrics.ts)
 export interface PartnerUser {
   id: string;
   name: string;
@@ -98,65 +98,6 @@ export interface PartnerUser {
   totalRequests: number;
   status: 'active' | 'inactive';
 }
-
-export const mockUsers: PartnerUser[] = [
-  {
-    id: 'pu-1',
-    name: 'Пользователь 1',
-    email: 'user1@example.com',
-    avatar: '',
-    department: 'Отдел продаж',
-    role: 'Менеджер',
-    lastActive: '2026-02-08T11:30:00',
-    totalRequests: 47,
-    status: 'active',
-  },
-  {
-    id: 'pu-2',
-    name: 'Пользователь 2',
-    email: 'user2@example.com',
-    avatar: '',
-    department: 'HR',
-    role: 'Специалист',
-    lastActive: '2026-02-08T10:15:00',
-    totalRequests: 23,
-    status: 'active',
-  },
-  {
-    id: 'pu-3',
-    name: 'Пользователь 3',
-    email: 'user3@example.com',
-    avatar: '',
-    department: 'IT',
-    role: 'Разработчик',
-    lastActive: '2026-02-07T18:45:00',
-    totalRequests: 12,
-    status: 'active',
-  },
-  {
-    id: 'pu-4',
-    name: 'Пользователь 4',
-    email: 'user4@example.com',
-    avatar: '',
-    department: 'Бухгалтерия',
-    role: 'Главный бухгалтер',
-    lastActive: '2026-02-06T09:00:00',
-    totalRequests: 89,
-    status: 'inactive',
-  },
-  {
-    id: 'pu-5',
-    name: 'Пользователь 5',
-    email: 'user5@example.com',
-    avatar: '',
-    department: 'Маркетинг',
-    role: 'Директор',
-    lastActive: '2026-02-08T12:00:00',
-    totalRequests: 156,
-    status: 'active',
-  },
-];
-
 
 // Отчёты
 export interface Report {
