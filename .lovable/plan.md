@@ -1,137 +1,160 @@
 
 
-# Замена всех Math.random() на стабильные данные
+# Доработки интерфейса админки
 
 ## Обзор
 
-Все динамические данные в админ-панели сейчас генерируются через `Math.random()` или захардкожены без привязки к тенантам. При каждом рендере числа меняются -- это недопустимо для демо. Нужно создать единый файл стабильных данных и подключить его ко всем компонентам.
-
-Также есть критический баг: ID тенантов в `TenantContext` (`tenant-a`, `tenant-b`, `tenant-c`) не совпадают с ключами в `Dashboard.tsx` (`gazprombank`, `wildberries`, `mec`). Это будет исправлено в рамках задачи.
+Четыре задачи: тенант-зависимые пользователи (15 для ГПБ, 12 для WB, 8-10 для остальных), 3-экранное превью брендинга, генерация CSV + расширение отчётов, таблица транзакций в биллинге.
 
 ---
 
-## Что будет сделано
+## 1. Users: тенант-зависимые наборы (8-15 записей)
 
-### 1. Обновить TenantContext -- привести ID тенантов в соответствие
+### Данные
 
-Файл: `src/contexts/TenantContext.tsx`
+Файл: `src/data/tenantMetrics.ts` -- добавить `tenantUsers: Record<string, PartnerUser[]>`
 
-Заменить анонимные `tenant-a/b/c` на реальные ID из задания:
-- `tenant-a` -> `gazprombank` (Газпромбанк)
-- `tenant-b` -> `wildberries` (Wildberries)
-- `tenant-c` -> `mes` (МЭС)
+- **gazprombank** (15): отделы "Ипотечный центр", "Розничный бизнес", "Корпоративный блок", "Риск-менеджмент", "Юридический департамент"; роли "Менеджер", "Старший менеджер", "Руководитель", "Аналитик"; totalRequests 12-340; 13 active + 2 inactive; lastActive разброс 30 дней; email = user1@example.com ... user15@example.com
+- **wildberries** (12): "Поддержка продавцов", "Логистика", "Клиентский сервис", "Маркетинг"
+- **dobroservice** (10): "Отдел продаж", "HR", "IT", "Бухгалтерия", "Маркетинг"
+- **mes** (8): "Теплоснабжение", "Электросети", "Абонентский отдел", "Диспетчерская"
+- **alfa** (10): "Розничный бизнес", "Кредитный отдел", "Инвестиции", "Комплаенс", "IT"
+- **pochtarf** (9): "Сортировка", "Доставка", "Клиентский сервис", "Логистика"
 
-Добавить два новых тенанта:
-- `alfa` (Альфа)
-- `pochtarf` (Почта РФ)
+### Компонент
 
-### 2. Создать файл `src/data/tenantMetrics.ts`
+Файл: `src/pages/admin/Users.tsx`:
+- Импортировать `tenantUsers` из `tenantMetrics.ts` и `useTenant`
+- Заменить `mockUsers` на `tenantUsers[currentTenant.id]`
+- При переключении тенанта список обновляется автоматически (реактивность через контекст)
 
-Содержит ВСЕ стабильные данные, привязанные к тенантам:
+### Очистка
 
-**a) `dashboardMetrics`** -- метрики дашборда (6 тенантов x 4 метрики с value + change), точно по указанным числам из задания.
+Удалить `mockUsers` из `src/data/mockData.ts` (перенесены в tenantMetrics).
 
-**b) `activityChartData`** -- 30 дней данных для каждого тенанта с фиксированными числами:
-- Для dobroservice: будни 78-120, выходные 50-70, тренд вверх ~5-8%/неделю
-- Для gazprombank: ~3x от dobroservice
-- Для wildberries: ~5x от dobroservice
-- Для остальных: пропорционально dashboardMetrics
-- Escalations = ~7-9% от aiRequests
+---
 
-**c) `burndownData`** -- 30 дней burn-down для каждого тенанта:
-- dobroservice: лимит 3000
-- gazprombank: лимит 10000
-- wildberries: лимит 18000
-- mes: лимит 2000
-- alfa: лимит 8000
-- pochtarf: лимит 5000
-- Plan = линейно от лимита до 0
-- Fact = с реалистичными отклонениями (чуть быстрее к середине, выравнивание к концу)
+## 2. Branding: 3-экранное превью
 
-**d) `tenantEscalations`** -- по 2-3 эскалации на тенант, из задания:
-- ГПБ: "Спор по кредитному договору" (high), "Возврат страховки..." (medium), "Отказ в реструктуризации" (high)
-- WB: "Возврат бракованного товара" (high), "Блокировка ЛК продавца" (medium)
-- Почта РФ: "Потеря международной посылки" (high), "Задержка EMS..." (medium)
-- МЭС: "Перерасчёт за отопление" (medium), "Отключение горячей воды..." (high)
-- Dobroservice и Alfa: по 2-3 тематических эскалации
+### Компонент
 
-**e) `tenantServiceUsage`** -- по тенантам, только релевантные сервисы:
-- ГПБ: Юрист (1840/2000), Финансист (920/1000), Психолог (450/500), Врач (380/500), Безопасность (210/300), Ассистент (620/1000)
-- WB, МЭС, Почта РФ, Alfa, Dobroservice -- каждый со своим набором
+Файл: `src/pages/admin/Branding.tsx`:
 
-**f) `tenantBillingQuotas`** -- квоты по сервисам для Billing-страницы, по тенантам.
+Добавить state для `appTitle` (контролируемый input вместо defaultValue).
 
-### 3. Обновить `src/pages/admin/Dashboard.tsx`
+Заменить секцию "Phone Preview" (строки 118-185) на 3 миниатюры в горизонтальном ряду (`flex gap-6 justify-center`):
 
-- Убрать локальный объект `metrics` с хардкодом
-- Импортировать `dashboardMetrics` из `tenantMetrics.ts`
-- Брать метрики по `currentTenant.id`
-- Использовать `change` из данных вместо хардкода `12.5`, `-8.2` и т.д.
+**Превью 1 -- "Splash":**
+- Рамка: `border border-border rounded-[2rem] aspect-[9/19] max-w-[120px] w-full overflow-hidden bg-background`
+- Содержимое: по центру иконка Bot (из lucide-react) цвета accentColor + appTitle под ней
+- Подпись "Splash" под рамкой
 
-### 4. Обновить `src/components/charts/ActivityChart.tsx`
+**Превью 2 -- "Лента":**
+- Та же рамка
+- Хедер с названием тенанта (фон accentColor), ниже -- карточка-заглушка (прямоугольник с bg-muted)
+- Подпись "Лента"
 
-- Принимать `tenantId` как проп
-- Импортировать `activityChartData` из `tenantMetrics.ts`
-- Брать массив по `tenantId` вместо глобального `activityChartData` из `mockData.ts`
+**Превью 3 -- "Чат":**
+- Та же рамка
+- Хедер ассистента (фон accentColor), 2 пузырька: серый (assistant) с оттенком accentColor/10, и accentColor (user)
+- Подпись "Чат"
 
-### 5. Обновить `src/components/charts/BurndownChart.tsx`
+Все 3 реагируют мгновенно на смену accentColor и appTitle.
 
-- Принимать `tenantId` как проп
-- Убрать `generateBurndownData()` с `Math.random()`
-- Импортировать `burndownData` из `tenantMetrics.ts`
-- Брать массив по `tenantId`
+---
 
-### 6. Обновить `src/components/admin/RecentEscalations.tsx`
+## 3. Reports: CSV-генерация + расширение моков
 
-- Принимать `tenantId` как проп
-- Импортировать `tenantEscalations` из `tenantMetrics.ts`
-- Показывать эскалации текущего тенанта
+### Данные
 
-### 7. Обновить `src/components/admin/ServiceUsageTable.tsx`
+Файл: `src/data/mockData.ts` -- расширить `mockReports` до 8 записей, добавив 5 новых:
+- "Использование AI-сервисов -- Январь 2026" (usage, pdf, "2.1 МБ")
+- "Биллинг -- Январь 2026" (billing, xlsx, "856 КБ")
+- "Качество обслуживания -- Q4 2025" (quality, pdf, "3.4 МБ")
+- "Активность пользователей -- Январь 2026" (usage, csv, "124 КБ")
+- "Эскалации -- Январь 2026" (quality, pdf, "1.8 МБ")
 
-- Принимать `tenantId` как проп
-- Импортировать `tenantServiceUsage` из `tenantMetrics.ts`
-- Показывать сервисы текущего тенанта
+Добавить поле `status?: 'ready' | 'generating'` в интерфейс `Report`.
 
-### 8. Обновить `src/pages/admin/Billing.tsx`
+### CSV-генерация
 
-- Импортировать `tenantBillingQuotas` из `tenantMetrics.ts`
-- Брать квоты по `currentTenant.id`
-- Передавать `tenantId` в `BurndownChart`
+Файл: `src/pages/admin/Reports.tsx`:
 
-### 9. Убрать неиспользуемые экспорты из `src/data/mockData.ts`
+Добавить функцию `downloadCSV(report)`:
+- Создать csvContent с 20 строками: "Дата,Сервис,AI-обращений,Эскалаций,CSAT\n" + фиксированные данные
+- `URL.createObjectURL(new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }))`
+- Программно создать `<a>`, кликнуть, revoke URL
+- toast.success("Отчёт скачан")
 
-Удалить `activityChartData`, `serviceUsage`, `billingQuotas` из mockData.ts (они переезжают в `tenantMetrics.ts`). Оставить: `mockEscalations` (для обратной совместимости других модулей), `services`, `mockUsers`, `mockReports`, expert data.
+Привязать к кнопке Download в каждой строке таблицы.
+
+### Создание отчёта с анимацией
+
+Файл: `src/pages/admin/Reports.tsx`:
+
+Добавить state `reports` (useState инициализированный из mockReports).
+
+При нажатии "Сформировать":
+1. Закрыть диалог
+2. Добавить новую запись в начало `reports` со `status: 'generating'`
+3. В таблице: если `status === 'generating'` -- показать Loader2 с анимацией spin + текст "Формируется..."
+4. `setTimeout(() => { обновить status на 'ready' }, 2000)`
+5. После готовности -- появляется кнопка скачивания
+
+---
+
+## 4. Billing: таблица транзакций
+
+### Данные
+
+Файл: `src/data/tenantMetrics.ts` -- добавить `tenantTransactions: Record<string, Transaction[]>`:
+
+```text
+interface Transaction {
+  date: string;
+  operation: string;
+  amount: number;  // отрицательное = списание, положительное = пополнение
+  balance: number;
+}
+```
+
+По 15 записей для каждого тенанта с реалистичными операциями ("AI-запросы (юрист)", "Эскалация (психолог)", "Пополнение квоты").
+
+### Компонент
+
+Файл: `src/pages/admin/Billing.tsx`:
+
+Добавить секцию "История операций" между burn-down и квотами:
+- Заголовок "История операций"
+- Таблица: Дата | Операция | Количество | Баланс
+- Количество: красный текст для списаний, зелёный для пополнений
+- Пагинация: показывать первые 10, кнопка "Показать ещё" загружает остальные (useState `showAll`)
 
 ---
 
 ## Что НЕ затрагивается
 
-- Роутинг и навигация
-- Авторизация (AuthContext)
-- UI-компоненты (shadcn)
-- Структура страниц
-- Модули expert, quality, studio, super
+- Авторизация и RBAC
+- Роутинг
+- Навигация (sidebar, topbar)
+- TenantContext (уже исправлен)
 
 ---
 
 ## Технические детали
 
-### Структура `tenantMetrics.ts` (ключевые типы)
+### Файлы для изменения
 
-```text
-dashboardMetrics: Record<string, { aiRequests/escalations/nps/avgTime: { value, change } }>
-activityChartData: Record<string, Array<{ date, aiRequests, escalations }>>
-burndownData: Record<string, Array<{ date, plan, fact }>>
-tenantEscalations: Record<string, Escalation[]>
-tenantServiceUsage: Record<string, ServiceUsageItem[]>
-tenantBillingQuotas: Record<string, BillingQuota[]>
-```
+1. `src/data/tenantMetrics.ts` -- добавить tenantUsers, tenantTransactions
+2. `src/data/mockData.ts` -- удалить mockUsers, расширить mockReports + добавить поле status
+3. `src/pages/admin/Users.tsx` -- импорт tenantUsers, useTenant
+4. `src/pages/admin/Branding.tsx` -- переделать превью на 3 миниатюры + controlled appTitle
+5. `src/pages/admin/Reports.tsx` -- CSV-генерация, динамический список, анимация создания
+6. `src/pages/admin/Billing.tsx` -- секция транзакций с пагинацией
 
 ### Порядок реализации
 
-1. Обновить `TenantContext.tsx` (исправить ID тенантов)
-2. Создать `src/data/tenantMetrics.ts` (все стабильные данные)
-3. Обновить Dashboard, ActivityChart, BurndownChart, RecentEscalations, ServiceUsageTable, Billing
-4. Убрать лишнее из `mockData.ts`
+1. Расширить tenantMetrics.ts (данные пользователей и транзакций)
+2. Обновить mockData.ts (отчёты)
+3. Параллельно обновить Users, Branding, Reports, Billing
 
