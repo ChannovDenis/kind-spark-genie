@@ -29,7 +29,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { mockFeedItems } from '@/data/studioScenariosData';
+import { mockFeedItems, type FeedItem } from '@/data/studioScenariosData';
+import { useStudioFeedItems } from '@/hooks/studio/useStudioVideos';
 import { cn } from '@/lib/utils';
 
 const statusConfig = {
@@ -58,16 +59,38 @@ const ChannelIcon = ({ channel }: { channel: string }) => {
   }
 };
 
+// Map Supabase feed_items to the FeedItem shape used by this page
+function mapSupabaseFeedItem(row: any): FeedItem {
+  return {
+    id: row.id,
+    title: row.title || 'Без названия',
+    category: row.tags?.[0] || row.type || 'Общее',
+    tenant: row.tenant_id || 'default',
+    publishedAt: row.created_at,
+    views: 0,
+    aiClicks: 0,
+    channels: ['app'] as ('app' | 'youtube' | 'vk' | 'telegram')[],
+    status: row.is_published ? 'active' : 'paused',
+    thumbnail: row.image_url || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=300&h=200&fit=crop',
+  };
+}
+
 export default function Feed() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tenantFilter, setTenantFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const { data: supabaseFeedItems } = useStudioFeedItems();
 
-  const uniqueTenants = [...new Set(mockFeedItems.map(item => item.tenant))];
-  const uniqueCategories = [...new Set(mockFeedItems.map(item => item.category))];
+  // Use Supabase feed_items if available, fallback to mocks
+  const feedItems: FeedItem[] = supabaseFeedItems && supabaseFeedItems.length > 0
+    ? supabaseFeedItems.map(mapSupabaseFeedItem)
+    : mockFeedItems;
 
-  const filteredItems = mockFeedItems.filter((item) => {
+  const uniqueTenants = [...new Set(feedItems.map(item => item.tenant))];
+  const uniqueCategories = [...new Set(feedItems.map(item => item.category))];
+
+  const filteredItems = feedItems.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTenant = tenantFilter === 'all' || item.tenant === tenantFilter;
     const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;

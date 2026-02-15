@@ -65,6 +65,134 @@ export type Database = {
         }
         Relationships: []
       }
+      videos: {
+        Row: {
+          id: string
+          prompt: string
+          status: string
+          duration: number
+          cost: number
+          video_url: string | null
+          final_video_url: string | null
+          task_id: string | null
+          error_message: string | null
+          user_id: string | null
+          exercise_id: string | null
+          voice_text: string | null
+          voice_url: string | null
+          voice_status: string | null
+          voice_task_id: string | null
+          ambient_type: string | null
+          ambient_url: string | null
+          ambient_status: string | null
+          ambient_task_id: string | null
+          composing_status: string | null
+          generation_step: string | null
+          source_video_id: string | null
+          total_extensions: number | null
+          current_extension: number | null
+          extension_video_ids: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          prompt: string
+          status?: string
+          duration: number
+          cost?: number
+          video_url?: string | null
+          final_video_url?: string | null
+          task_id?: string | null
+          error_message?: string | null
+          user_id?: string | null
+          exercise_id?: string | null
+          voice_text?: string | null
+          voice_url?: string | null
+          voice_status?: string | null
+          voice_task_id?: string | null
+          ambient_type?: string | null
+          ambient_url?: string | null
+          ambient_status?: string | null
+          ambient_task_id?: string | null
+          composing_status?: string | null
+          generation_step?: string | null
+          source_video_id?: string | null
+          total_extensions?: number | null
+          current_extension?: number | null
+          extension_video_ids?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          prompt?: string
+          status?: string
+          duration?: number
+          cost?: number
+          video_url?: string | null
+          final_video_url?: string | null
+          task_id?: string | null
+          error_message?: string | null
+          user_id?: string | null
+          exercise_id?: string | null
+          voice_text?: string | null
+          voice_url?: string | null
+          voice_status?: string | null
+          voice_task_id?: string | null
+          ambient_type?: string | null
+          ambient_url?: string | null
+          ambient_status?: string | null
+          ambient_task_id?: string | null
+          composing_status?: string | null
+          generation_step?: string | null
+          source_video_id?: string | null
+          total_extensions?: number | null
+          current_extension?: number | null
+          extension_video_ids?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercises: {
+        Row: {
+          id: string
+          name: string
+          category: string
+          prompt_full: string
+          restrictions: string | null
+          voice_text: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          category: string
+          prompt_full: string
+          restrictions?: string | null
+          voice_text?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          category?: string
+          prompt_full?: string
+          restrictions?: string | null
+          voice_text?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

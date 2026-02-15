@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Play, 
-  Loader, 
-  FileEdit, 
-  Eye, 
+import { useMemo } from 'react';
+import {
+  Play,
+  Loader,
+  FileEdit,
+  Eye,
   TrendingUp,
   Sparkles,
   FileText,
@@ -19,6 +20,9 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { mockRecentVideos } from '@/data/studioScenariosData';
+import { useStudioVideos, useProcessingVideosPolling } from '@/hooks/studio/useStudioVideos';
+import { getGenerationProgress } from '@/types/studio';
+import type { Video } from '@/types/studio';
 
 const statusConfig: Record<string, { label: string; status: Status }> = {
   draft: { label: 'Черновик', status: 'pending' },
@@ -68,8 +72,52 @@ const quickActions = [
   },
 ];
 
+// Map Supabase Video to RecentVideo-like shape for the card grid
+function mapVideoToRecent(v: Video) {
+  const statusMap: Record<string, 'draft' | 'generating' | 'ready' | 'published'> = {
+    pending: 'draft',
+    processing: 'generating',
+    completed: 'ready',
+    failed: 'draft',
+  };
+  return {
+    id: v.id,
+    title: v.prompt.slice(0, 60) + (v.prompt.length > 60 ? '...' : ''),
+    status: statusMap[v.status] || 'draft',
+    progress: v.status === 'processing' ? getGenerationProgress(v) : undefined,
+    channels: [] as ('app' | 'youtube' | 'vk' | 'telegram')[],
+    thumbnail: v.video_url || v.final_video_url || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=300&h=200&fit=crop',
+    createdAt: v.created_at,
+  };
+}
+
 export default function StudioDashboard() {
   const navigate = useNavigate();
+  const { data: supabaseVideos, isLoading } = useStudioVideos();
+  useProcessingVideosPolling();
+
+  // Use Supabase videos if available, fallback to mocks
+  const recentVideos = useMemo(() => {
+    if (supabaseVideos && supabaseVideos.length > 0) {
+      return supabaseVideos.slice(0, 6).map(mapVideoToRecent);
+    }
+    return mockRecentVideos;
+  }, [supabaseVideos]);
+
+  // Metrics from real data
+  const metrics = useMemo(() => {
+    if (!supabaseVideos || supabaseVideos.length === 0) {
+      return { published: '4', generating: '2', drafts: '7' };
+    }
+    const published = supabaseVideos.filter(v => v.status === 'completed').length;
+    const generating = supabaseVideos.filter(v => v.status === 'processing').length;
+    const drafts = supabaseVideos.filter(v => v.status === 'pending' || v.status === 'failed').length;
+    return {
+      published: published.toString(),
+      generating: generating.toString(),
+      drafts: drafts.toString(),
+    };
+  }, [supabaseVideos]);
 
   return (
     <div className="space-y-6">
@@ -81,20 +129,18 @@ export default function StudioDashboard() {
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <MetricCard
-          title="Опубликовано сегодня"
-          value="4"
-          change={2}
-          changeLabel="vs вчера"
+          title="Опубликовано"
+          value={metrics.published}
           icon={<Play className="h-5 w-5" />}
         />
         <MetricCard
           title="В генерации"
-          value="2"
+          value={metrics.generating}
           icon={<Loader className="h-5 w-5 animate-spin" />}
         />
         <MetricCard
           title="Черновики"
-          value="7"
+          value={metrics.drafts}
           icon={<FileEdit className="h-5 w-5" />}
         />
         <MetricCard
@@ -139,7 +185,7 @@ export default function StudioDashboard() {
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockRecentVideos.map((video) => (
+          {recentVideos.map((video) => (
             <div
               key={video.id}
               className="glass-card overflow-hidden group cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
