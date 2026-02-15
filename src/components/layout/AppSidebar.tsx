@@ -107,6 +107,14 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
+    label: 'Проект',
+    emoji: '🚀',
+    basePath: '/project',
+    items: [
+      { title: 'Дашборд проекта', url: '/project-dashboard', icon: BarChart3 },
+    ],
+  },
+  {
     label: 'Супер-админ',
     emoji: '⚡',
     basePath: '/super',
@@ -145,7 +153,7 @@ export function AppSidebar() {
   };
 
   const isActive = (url: string) => {
-    if (url === '/admin' || url === '/expert' || url === '/quality' || url === '/super') {
+    if (url === '/admin' || url === '/expert' || url === '/quality' || url === '/super' || url === '/project-dashboard') {
       return location.pathname === url;
     }
     return location.pathname.startsWith(url);

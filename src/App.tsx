@@ -54,6 +54,9 @@ import SuperAnalytics from "@/pages/super/Analytics";
 import SuperMiniApps from "@/pages/super/MiniApps";
 import SuperMiniAppConfig from "@/pages/super/MiniAppConfig";
 
+// Project dashboard
+import ProjectDashboard from "@/pages/admin/ProjectDashboard";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -100,6 +103,13 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            {/* Project dashboard - super_admin only */}
+            <Route path="/project-dashboard" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><ProjectDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+
             {/* Expert routes - require expert role or higher */}
             <Route path="/expert" element={
               <ProtectedRoute allowedRoles={['expert', 'partner_admin', 'super_admin']}>
