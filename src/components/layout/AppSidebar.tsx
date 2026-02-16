@@ -112,6 +112,7 @@ const menuGroups: MenuGroup[] = [
     basePath: '/project',
     items: [
       { title: 'Дашборд проекта', url: '/project-dashboard', icon: BarChart3 },
+      { title: 'Бэклог', url: '/project/backlog', icon: ListChecks },
     ],
   },
   {

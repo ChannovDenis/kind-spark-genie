@@ -56,6 +56,7 @@ import SuperMiniAppConfig from "@/pages/super/MiniAppConfig";
 
 // Project dashboard
 import ProjectDashboard from "@/pages/admin/ProjectDashboard";
+import Backlog from "@/pages/admin/Backlog";
 
 import NotFound from "./pages/NotFound";
 
@@ -107,6 +108,12 @@ const App = () => (
             <Route path="/project-dashboard" element={
               <ProtectedRoute allowedRoles={['super_admin']}>
                 <MainLayout><ProjectDashboard /></MainLayout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/project/backlog" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <MainLayout><Backlog /></MainLayout>
               </ProtectedRoute>
             } />
 
