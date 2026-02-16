@@ -86,15 +86,15 @@ export type TaskStatus = keyof typeof STATUSES;
 
 // --- Текущая итерация (обновлять при переходе) ---
 
-export const CURRENT_ITERATION: IterationId = 'ITER-1';
+export const CURRENT_ITERATION: IterationId = 'ITER-4';
 
 // --- Метрики проекта (обновлять после каждого спринта) ---
 
 export const PROJECT_METRICS = {
-  tasksCompleted: 78,
-  aiHours: 18,
-  manualHours: 620,
-  aiCostRub: 4000,
+  tasksCompleted: 84,
+  aiHours: 22,
+  manualHours: 720,
+  aiCostRub: 5000,
   ratePerHour: 3500,
   demoDate: '2026-03-01',
   lastUpdated: '2026-02-16',
@@ -108,13 +108,14 @@ export interface PhaseTask {
 }
 
 export const CURRENT_PHASE_TASKS: PhaseTask[] = [
-  { name: 'HTTPS + субдомены (7 поддоменов + SSL)', done: true },
-  { name: 'AI Chat — tenant system prompts', done: true },
-  { name: 'Feed scoring по тенанту', done: true },
-  { name: 'Self-hosted Supabase + seed data', done: true },
-  { name: 'Дашборд проекта + Бэклог ЕЮС', done: true },
-  { name: 'ГПБ / МЭС / WB / МСБ — rework в Lovable', done: false },
-  { name: 'Deploy pipeline: Lovable \u2192 GitHub \u2192 сервер', done: true },
+  { name: 'Sidebar: vh/dch зоны + аккордеон + метки ВХ/ДЧ', done: true },
+  { name: 'TAXONOMY.md + project-taxonomy.ts (единый словарь)', done: true },
+  { name: 'ProjectDashboard → импорт из taxonomy (ноль хардкода)', done: true },
+  { name: 'Реструктуризация docs/ → 7 файлов по назначению', done: true },
+  { name: 'RULES.md + CLAUDE.md для Claude Code', done: true },
+  { name: 'ГПБ / МЭС / WB / МСБ — rework в Lovable (Denis)', done: false },
+  { name: 'Pull Lovable updates → build → deploy', done: false },
+  { name: 'E2E тест: все 6 тенантов по субдоменам', done: false },
 ];
 
 // --- Вычисляемые метрики ---
