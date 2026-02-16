@@ -57,7 +57,7 @@ export default function QualityDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Quality Center"
+        title="Центр качества"
         description="Мониторинг качества AI-ответов и дообучение моделей"
       />
 

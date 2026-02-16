@@ -18,7 +18,6 @@ import {
   Settings,
   BarChart3,
   ChevronDown,
-  ChevronRight,
   Video,
   TrendingUp,
   Newspaper,
@@ -56,13 +55,30 @@ interface MenuGroup {
   emoji: string;
   basePath: string;
   items: MenuItem[];
+  owner: 'vh' | 'dch';
 }
 
+const ownerConfig = {
+  vh: { label: 'ВХ', border: 'border-l-emerald-500/40', badge: 'bg-emerald-500/15 text-emerald-400' },
+  dch: { label: 'ДЧ', border: 'border-l-blue-500/40', badge: 'bg-blue-500/15 text-blue-400' },
+};
+
 const menuGroups: MenuGroup[] = [
+  {
+    label: 'Проект',
+    emoji: '🚀',
+    basePath: '/project',
+    owner: 'dch',
+    items: [
+      { title: 'Дашборд проекта', url: '/project-dashboard', icon: BarChart3 },
+      { title: 'Бэклог', url: '/project/backlog', icon: ListChecks },
+    ],
+  },
   {
     label: 'Партнёр',
     emoji: '🏢',
     basePath: '/admin',
+    owner: 'dch',
     items: [
       { title: 'Дашборд', url: '/admin', icon: LayoutDashboard },
       { title: 'Биллинг', url: '/admin/billing', icon: CreditCard },
@@ -75,6 +91,7 @@ const menuGroups: MenuGroup[] = [
     label: 'Эксперт',
     emoji: '👨‍⚕️',
     basePath: '/expert',
+    owner: 'vh',
     items: [
       { title: 'Кабинет', url: '/expert', icon: Headphones },
       { title: 'Календарь', url: '/expert/calendar', icon: Calendar },
@@ -84,9 +101,10 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    label: 'Quality Center',
+    label: 'Центр качества',
     emoji: '🎯',
     basePath: '/quality',
+    owner: 'vh',
     items: [
       { title: 'Дашборд', url: '/quality', icon: ShieldCheck },
       { title: 'Разбор диалогов', url: '/quality/dialogs', icon: ListChecks },
@@ -99,6 +117,7 @@ const menuGroups: MenuGroup[] = [
     label: 'Контент-студия',
     emoji: '🎬',
     basePath: '/studio',
+    owner: 'dch',
     items: [
       { title: 'Видео', url: '/studio', icon: Video },
       { title: 'Тренды', url: '/studio/trends', icon: TrendingUp },
@@ -107,18 +126,10 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    label: 'Проект',
-    emoji: '🚀',
-    basePath: '/project',
-    items: [
-      { title: 'Дашборд проекта', url: '/project-dashboard', icon: BarChart3 },
-      { title: 'Бэклог', url: '/project/backlog', icon: ListChecks },
-    ],
-  },
-  {
     label: 'Супер-админ',
     emoji: '⚡',
     basePath: '/super',
+    owner: 'dch',
     items: [
       { title: 'Тенанты', url: '/super', icon: Building2 },
       { title: 'Тарифы', url: '/super/pricing', icon: BarChart3 },
@@ -139,18 +150,24 @@ export function AppSidebar() {
   
   const [openGroups, setOpenGroups] = useState<string[]>(() => {
     // Открываем группу, соответствующую текущему маршруту
-    const currentGroup = menuGroups.find(g => 
+    const currentGroup = menuGroups.find(g =>
       location.pathname.startsWith(g.basePath)
     );
     return currentGroup ? [currentGroup.basePath] : ['/admin'];
   });
 
+  const [userClosed, setUserClosed] = useState<Set<string>>(new Set());
+
   const toggleGroup = (basePath: string) => {
-    setOpenGroups(prev => 
-      prev.includes(basePath) 
-        ? prev.filter(p => p !== basePath)
-        : [...prev, basePath]
-    );
+    setOpenGroups(prev => {
+      if (prev.includes(basePath)) {
+        setUserClosed(p => new Set(p).add(basePath));
+        return prev.filter(p => p !== basePath);
+      } else {
+        setUserClosed(p => { const n = new Set(p); n.delete(basePath); return n; });
+        return [...prev, basePath];
+      }
+    });
   };
 
   const isActive = (url: string) => {
@@ -180,16 +197,19 @@ export function AppSidebar() {
         {menuGroups.map((group) => {
           const isOpen = openGroups.includes(group.basePath);
           const hasActiveItem = group.items.some(item => isActive(item.url));
+          const isEffectivelyOpen = isOpen || (hasActiveItem && !userClosed.has(group.basePath));
+
+          const oc = ownerConfig[group.owner];
 
           return (
             <Collapsible
               key={group.basePath}
-              open={isOpen || hasActiveItem}
+              open={isEffectivelyOpen}
               onOpenChange={() => toggleGroup(group.basePath)}
             >
-              <SidebarGroup>
+              <SidebarGroup className={cn("border-l-2", oc.border)}>
                 <CollapsibleTrigger asChild>
-                  <SidebarGroupLabel 
+                  <SidebarGroupLabel
                     className={cn(
                       "cursor-pointer hover:bg-sidebar-accent rounded-lg transition-colors px-3 py-2",
                       hasActiveItem && "text-primary"
@@ -199,9 +219,17 @@ export function AppSidebar() {
                       <div className="flex items-center gap-2">
                         <span>{group.emoji}</span>
                         {!collapsed && <span>{group.label}</span>}
+                        {!collapsed && (
+                          <span className={cn("text-[10px] font-medium px-1.5 py-0.5 rounded", oc.badge)}>
+                            {oc.label}
+                          </span>
+                        )}
                       </div>
                       {!collapsed && (
-                        isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+                        <ChevronDown className={cn(
+                          "h-4 w-4 shrink-0 transition-transform duration-200",
+                          isEffectivelyOpen ? "" : "-rotate-90"
+                        )} />
                       )}
                     </div>
                   </SidebarGroupLabel>

@@ -11,52 +11,52 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import Auth from "@/pages/Auth";
 import Unauthorized from "@/pages/Unauthorized";
 
-// Admin pages
-import AdminDashboard from "@/pages/admin/Dashboard";
-import AdminBilling from "@/pages/admin/Billing";
-import AdminUsers from "@/pages/admin/Users";
-import AdminBranding from "@/pages/admin/Branding";
-import AdminReports from "@/pages/admin/Reports";
+// ДЧ — Admin pages
+import AdminDashboard from "@/pages/dch/admin/Dashboard";
+import AdminBilling from "@/pages/dch/admin/Billing";
+import AdminUsers from "@/pages/dch/admin/Users";
+import AdminBranding from "@/pages/dch/admin/Branding";
+import AdminReports from "@/pages/dch/admin/Reports";
 
-// Expert pages
-import ExpertDashboard from "@/pages/expert/Dashboard";
-import ExpertSession from "@/pages/expert/Session";
-import ExpertSchedule from "@/pages/expert/Schedule";
-import ExpertSessions from "@/pages/expert/Sessions";
-import ExpertConclusions from "@/pages/expert/Conclusions";
-import ExpertEarnings from "@/pages/expert/Earnings";
+// ВХ — Expert pages
+import ExpertDashboard from "@/pages/vh/expert/Dashboard";
+import ExpertSession from "@/pages/vh/expert/Session";
+import ExpertSchedule from "@/pages/vh/expert/Schedule";
+import ExpertSessions from "@/pages/vh/expert/Sessions";
+import ExpertConclusions from "@/pages/vh/expert/Conclusions";
+import ExpertEarnings from "@/pages/vh/expert/Earnings";
 
-// Quality pages
-import QualityDashboard from "@/pages/quality/Dashboard";
-import DialogList from "@/pages/quality/DialogList";
-import DialogReview from "@/pages/quality/DialogReview";
-import QualityKnowledge from "@/pages/quality/Knowledge";
-import QualityTraining from "@/pages/quality/Training";
-import WhisperLog from "@/pages/quality/WhisperLog";
+// ВХ — Quality pages
+import QualityDashboard from "@/pages/vh/quality/Dashboard";
+import DialogList from "@/pages/vh/quality/DialogList";
+import DialogReview from "@/pages/vh/quality/DialogReview";
+import QualityKnowledge from "@/pages/vh/quality/Knowledge";
+import QualityTraining from "@/pages/vh/quality/Training";
+import WhisperLog from "@/pages/vh/quality/WhisperLog";
 
-// Studio pages
-import StudioDashboard from "@/pages/studio/Dashboard";
-import StudioTrends from "@/pages/studio/Trends";
-import StudioVideoAnalytics from "@/pages/studio/VideoAnalytics";
-import StudioScenarios from "@/pages/studio/Scenarios";
-import StudioScenarioEditor from "@/pages/studio/ScenarioEditor";
-import StudioFeed from "@/pages/studio/Feed";
+// ДЧ — Studio pages
+import StudioDashboard from "@/pages/dch/studio/Dashboard";
+import StudioTrends from "@/pages/dch/studio/Trends";
+import StudioVideoAnalytics from "@/pages/dch/studio/VideoAnalytics";
+import StudioScenarios from "@/pages/dch/studio/Scenarios";
+import StudioScenarioEditor from "@/pages/dch/studio/ScenarioEditor";
+import StudioFeed from "@/pages/dch/studio/Feed";
 
-// Super admin pages
-import SuperDashboard from "@/pages/super/Dashboard";
-import SuperPricing from "@/pages/super/Pricing";
-import SuperSettings from "@/pages/super/Settings";
-import SuperTenantDetail from "@/pages/super/TenantDetail";
-import SuperCampaigns from "@/pages/super/Campaigns";
-import SuperCampaignEditor from "@/pages/super/CampaignEditor";
-import SuperExperts from "@/pages/super/Experts";
-import SuperAnalytics from "@/pages/super/Analytics";
-import SuperMiniApps from "@/pages/super/MiniApps";
-import SuperMiniAppConfig from "@/pages/super/MiniAppConfig";
+// ДЧ — Super admin pages
+import SuperDashboard from "@/pages/dch/super/Dashboard";
+import SuperPricing from "@/pages/dch/super/Pricing";
+import SuperSettings from "@/pages/dch/super/Settings";
+import SuperTenantDetail from "@/pages/dch/super/TenantDetail";
+import SuperCampaigns from "@/pages/dch/super/Campaigns";
+import SuperCampaignEditor from "@/pages/dch/super/CampaignEditor";
+import SuperExperts from "@/pages/dch/super/Experts";
+import SuperAnalytics from "@/pages/dch/super/Analytics";
+import SuperMiniApps from "@/pages/dch/super/MiniApps";
+import SuperMiniAppConfig from "@/pages/dch/super/MiniAppConfig";
 
-// Project dashboard
-import ProjectDashboard from "@/pages/admin/ProjectDashboard";
-import Backlog from "@/pages/admin/Backlog";
+// ДЧ — Project dashboard
+import ProjectDashboard from "@/pages/dch/admin/ProjectDashboard";
+import Backlog from "@/pages/dch/admin/Backlog";
 
 import NotFound from "./pages/NotFound";
 

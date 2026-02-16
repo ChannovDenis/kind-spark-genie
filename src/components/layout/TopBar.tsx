@@ -23,7 +23,7 @@ const breadcrumbMap: Record<string, string> = {
   '/expert/schedule': 'Расписание',
   '/expert/sessions': 'Сессии',
   '/expert/conclusions': 'Заключения',
-  '/quality': 'Quality Center',
+  '/quality': 'Центр качества',
   '/quality/dialogs': 'Разбор диалогов',
   '/quality/knowledge': 'База знаний',
   '/quality/training': 'Дообучение',
@@ -36,7 +36,7 @@ const breadcrumbMap: Record<string, string> = {
 const sectionNames: Record<string, string> = {
   '/admin': 'Партнёрская панель',
   '/expert': 'Кабинет эксперта',
-  '/quality': 'Quality Center',
+  '/quality': 'Центр качества',
   '/super': 'Супер-админ',
 };
 

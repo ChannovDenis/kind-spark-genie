@@ -1,113 +1,51 @@
 import {
-  Rocket, Clock, Users, Bot, Zap, CheckCircle2, Circle,
-  ArrowUpRight, Target, TrendingUp, Calendar, Shield,
+  Rocket, Clock, Users, Zap, CheckCircle2, Circle,
+  ArrowUpRight, Target, Calendar, Shield,
   Smartphone, Headphones, Video, BarChart3, ListTodo,
-  Globe, Palette, MessageSquare, ShoppingBag, Building2,
+  Globe, Palette, MessageSquare, Building2,
   Lightbulb, Wrench
 } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import {
+  DIRECTIONS,
+  DIRECTION_GROUPS,
+  MATURITY_LEVELS,
+  OWNERS,
+  PROJECT_METRICS,
+  CURRENT_PHASE_TASKS,
+  getDaysUntilDemo,
+  getOverallProgress,
+  getSpeedup,
+  getSavingsRub,
+  getRoi,
+  type DirectionGroup,
+  type MaturityLevel,
+} from '@/constants/project-taxonomy';
 
-// --- Data ---
+// --- Icon map (lucide name → component) ---
 
-interface Direction {
-  id: number;
-  name: string;
-  level: 'L0' | 'L1' | 'L2' | 'L3';
-  target: 'L1' | 'L2' | 'L3';
-  icon: React.ElementType;
-  iteration: string;
-  group: 'core' | 'mini-app' | 'management';
-}
-
-const directions: Direction[] = [
-  { id: 1, name: 'Feed (TikTok-лента)', level: 'L1', target: 'L2', icon: Smartphone, iteration: 'Iter1', group: 'core' },
-  { id: 2, name: 'Сервисы (Hub)', level: 'L1', target: 'L2', icon: Target, iteration: '-', group: 'core' },
-  { id: 3, name: 'AI Chat (9 ассистентов)', level: 'L1', target: 'L2', icon: MessageSquare, iteration: 'Iter1', group: 'core' },
-  { id: 4, name: 'HTTPS + субдомены', level: 'L0', target: 'L1', icon: Globe, iteration: 'Iter1', group: 'core' },
-  { id: 5, name: 'ГПБ AI-Архитектор', level: 'L0', target: 'L1', icon: Building2, iteration: 'Iter2', group: 'mini-app' },
-  { id: 6, name: 'МЭС Защита', level: 'L0', target: 'L1', icon: Shield, iteration: 'Iter2', group: 'mini-app' },
-  { id: 7, name: 'WB AI-Стилист', level: 'L0', target: 'L1', icon: Palette, iteration: 'Iter3', group: 'mini-app' },
-  { id: 8, name: 'МСБ (AI-скиллы)', level: 'L0', target: 'L1', icon: Lightbulb, iteration: 'Iter3', group: 'mini-app' },
-  { id: 9, name: 'Админка + КЦ 2.0', level: 'L1', target: 'L2', icon: Headphones, iteration: 'Iter1', group: 'management' },
-  { id: 10, name: 'Контент-студия', level: 'L1', target: 'L2', icon: Video, iteration: 'Iter3', group: 'management' },
-  { id: 11, name: 'Дашборд проекта', level: 'L1', target: 'L1', icon: BarChart3, iteration: 'Iter1', group: 'management' },
-  { id: 12, name: 'Бэклог ЕЮС', level: 'L0', target: 'L1', icon: ListTodo, iteration: 'Iter4', group: 'management' },
-];
-
-interface TeamMember {
-  name: string;
-  role: string;
-  emoji: string;
-}
-
-const team: TeamMember[] = [
-  { name: 'Денис Чаннов', role: 'Архитектор, AI-оператор', emoji: '👨‍💻' },
-  { name: 'Claude Code', role: 'Основной разработчик', emoji: '🤖' },
-  { name: 'Владимир Хаванский', role: 'КЦ 2.0, голосовые агенты', emoji: '🎧' },
-];
-
-interface IterationTask {
-  name: string;
-  done: boolean;
-}
-
-const currentIterationTasks: IterationTask[] = [
-  { name: 'HTTPS + субдомены (ждём DNS)', done: false },
-  { name: 'AI Chat — tenant system prompts', done: true },
-  { name: 'Feed scoring по тенанту', done: true },
-  { name: 'Admin code splitting', done: true },
-  { name: 'Дашборд проекта ЕЮС', done: true },
-];
-
-// --- Helpers ---
-
-const levelColors: Record<string, string> = {
-  L0: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-  L1: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  L2: 'bg-green-500/20 text-green-400 border-green-500/30',
-  L3: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+const iconMap: Record<string, React.ElementType> = {
+  Smartphone, Target, MessageSquare, Globe,
+  Building2, Shield, Palette, Lightbulb,
+  Headphones, Video, BarChart3, ListTodo,
 };
-
-const levelProgress: Record<string, number> = {
-  L0: 0,
-  L1: 33,
-  L2: 66,
-  L3: 100,
-};
-
-const groupLabels: Record<string, string> = {
-  core: 'Ядро платформы',
-  'mini-app': 'Мини-приложения клиентов',
-  management: 'Управление',
-};
-
-function getDaysUntilDemo(): number {
-  const demo = new Date('2026-03-01');
-  const now = new Date();
-  const diff = demo.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-}
-
-function getOverallProgress(): number {
-  const l1Count = directions.filter(d => d.level !== 'L0').length;
-  return Math.round((l1Count / directions.length) * 100);
-}
 
 // --- Component ---
 
 export default function ProjectDashboard() {
   const daysLeft = getDaysUntilDemo();
   const progress = getOverallProgress();
-  const tasksCompleted = 52;
-  const aiHours = 12;
-  const manualHours = 396;
-  const speedup = Math.round(manualHours / aiHours);
-  const savingsRub = Math.round((manualHours - aiHours) * 3500);
-  const aiCostRub = 2000;
-  const roi = Math.round(savingsRub / aiCostRub);
+  const { tasksCompleted, aiHours, manualHours, aiCostRub, ratePerHour, lastUpdated } = PROJECT_METRICS;
+  const speedup = getSpeedup();
+  const savingsRub = getSavingsRub();
+  const roi = getRoi();
+
+  const directionsArr = Object.values(DIRECTIONS);
+  const groups = Object.keys(DIRECTION_GROUPS) as DirectionGroup[];
+  const teamArr = Object.values(OWNERS);
 
   return (
     <div className="space-y-6">
@@ -126,7 +64,7 @@ export default function ProjectDashboard() {
             <div>
               <h2 className="text-lg font-semibold">Общий прогресс</h2>
               <p className="text-sm text-muted-foreground">
-                12 направлений · 5 итераций до демо
+                {directionsArr.length} направлений · 5 итераций до демо
               </p>
             </div>
           </div>
@@ -152,24 +90,25 @@ export default function ProjectDashboard() {
           </div>
           <Progress value={progress} className="h-3" />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>L0: Stub</span>
-            <span>L1: Demo-ready</span>
-            <span>L2: Pilot</span>
-            <span>L3: Prod</span>
+            {(Object.keys(MATURITY_LEVELS) as MaturityLevel[]).map(lvl => (
+              <span key={lvl}>{lvl}: {MATURITY_LEVELS[lvl].name}</span>
+            ))}
           </div>
         </div>
       </div>
 
       {/* === БЛОК 2: 12 НАПРАВЛЕНИЙ === */}
       <div className="space-y-4">
-        {(['core', 'mini-app', 'management'] as const).map(group => (
+        {groups.map(group => (
           <div key={group}>
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              {groupLabels[group]}
+              {DIRECTION_GROUPS[group].label}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              {directions.filter(d => d.group === group).map(d => {
-                const Icon = d.icon;
+              {directionsArr.filter(d => d.group === group).map(d => {
+                const Icon = iconMap[d.iconName] || BarChart3;
+                const lvlMeta = MATURITY_LEVELS[d.level];
+                const tgtMeta = MATURITY_LEVELS[d.target];
                 return (
                   <div key={d.id} className="glass-card p-4 space-y-3">
                     <div className="flex items-start justify-between">
@@ -181,15 +120,15 @@ export default function ProjectDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={cn("text-xs font-mono", levelColors[d.level])}>
+                      <Badge variant="outline" className={cn("text-xs font-mono", lvlMeta.color)}>
                         {d.level}
                       </Badge>
                       <ArrowUpRight className="h-3 w-3 text-muted-foreground" />
-                      <Badge variant="outline" className={cn("text-xs font-mono", levelColors[d.target])}>
+                      <Badge variant="outline" className={cn("text-xs font-mono", tgtMeta.color)}>
                         {d.target}
                       </Badge>
                     </div>
-                    <Progress value={levelProgress[d.level]} className="h-1.5" />
+                    <Progress value={lvlMeta.progress} className="h-1.5" />
                     <div className="text-xs text-muted-foreground">{d.iteration}</div>
                   </div>
                 );
@@ -239,8 +178,8 @@ export default function ProjectDashboard() {
         </div>
 
         <div className="mt-4 p-3 rounded-lg bg-muted/20 text-xs text-muted-foreground">
-          Расчёт: {manualHours}ч ручной работы (14 суток) x 3 500 руб/ч = {(manualHours * 3500).toLocaleString('ru-RU')} руб.
-          Стоимость AI: ~{aiCostRub.toLocaleString('ru-RU')} руб (Claude Max + API).
+          Расчёт: {manualHours}ч ручной работы ({Math.round(manualHours / 24)} суток) x {ratePerHour.toLocaleString('ru-RU')} руб/ч = {(manualHours * ratePerHour).toLocaleString('ru-RU')} руб.
+          Стоимость AI: ~{aiCostRub.toLocaleString('ru-RU')} руб (Claude Max + API). Обновлено: {lastUpdated}.
         </div>
       </div>
 
@@ -255,7 +194,7 @@ export default function ProjectDashboard() {
             <h2 className="text-lg font-semibold">Команда</h2>
           </div>
           <div className="space-y-3">
-            {team.map((member) => (
+            {teamArr.map((member) => (
               <div key={member.name} className="flex items-center gap-3 p-3 rounded-lg bg-muted/20">
                 <span className="text-2xl">{member.emoji}</span>
                 <div>
@@ -274,12 +213,12 @@ export default function ProjectDashboard() {
               <Wrench className="h-5 w-5 text-purple-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold">Итерация 1: Полировка ядра</h2>
-              <p className="text-xs text-muted-foreground">16-18 февраля 2026</p>
+              <h2 className="text-lg font-semibold">Текущая фаза: Lovable rework</h2>
+              <p className="text-xs text-muted-foreground">Итерации 1-3 завершены · 16-17 февраля 2026</p>
             </div>
           </div>
           <div className="space-y-2">
-            {currentIterationTasks.map((task, i) => (
+            {CURRENT_PHASE_TASKS.map((task, i) => (
               <div
                 key={i}
                 className={cn(
@@ -302,7 +241,7 @@ export default function ProjectDashboard() {
             ))}
           </div>
           <div className="mt-4 text-xs text-muted-foreground">
-            {currentIterationTasks.filter(t => t.done).length}/{currentIterationTasks.length} задач выполнено
+            {CURRENT_PHASE_TASKS.filter(t => t.done).length}/{CURRENT_PHASE_TASKS.length} задач выполнено
           </div>
         </div>
       </div>
